@@ -35,12 +35,25 @@ node dist/bin.mjs events list --limit 5 --json
 node dist/bin.mjs markets list --limit 3 --json
 node dist/bin.mjs trades list --limit 5 --json
 node dist/bin.mjs search bitcoin --limit 5 --json
+node dist/bin.mjs wallet create ./agent-wallet.json
 ```
 
 ## Output formats
 
 - Default: human-readable full JSON (no truncation)
 - `--json`: structured JSON with `data`, `pagination`, `_hints`
+
+## Wallet
+
+Create a Solana keypair for agent signing and save it to a file:
+
+```bash
+node dist/bin.mjs wallet create <path>
+```
+
+The CLI writes a standard Solana keypair file (JSON array of 64 bytes) to `<path>` and prints the **public key** so you can fund it. The file is compatible with `Keypair.fromSecretKey(new Uint8Array(JSON.parse(...)))`.
+
+**Agent / automation:** Agents can run `wallet create <path>` autonomously. Use `--json` to get machine-readable output `{ data: { publicKey, path } }`. Fund the returned `publicKey` before using the wallet.
 
 ## Config (codebase only)
 

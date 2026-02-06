@@ -2,6 +2,9 @@
 import { a as getMarketByMint, c as getOrderbookByTicker, d as getTagsByCategories, f as getTrades, i as getMarket, l as getSeries, m as searchEvents, n as getEvent, o as getMarkets, r as getEvents, u as getSeriesByTicker } from "./metadata-W-pHA1-K.mjs";
 import { Command } from "commander";
 import chalk from "chalk";
+import fs from "node:fs";
+import path from "node:path";
+import { Keypair } from "@solana/web3.js";
 
 //#region src/utils/hints.ts
 function eventsDescribeSchema() {
@@ -519,6 +522,42 @@ function registerSearchCommand(program) {
 }
 
 //#endregion
+//#region src/commands/wallet.ts
+function registerWalletCommand(program) {
+	applyGlobalOptions(program.command("wallet").description("Create or manage Solana keypair for agent signing").command("create <path>").description("Generate keypair, save to file, print public key for funding").option("--force", "Overwrite file if it already exists").action(async (pathArg, options, command) => {
+		const globals = getGlobalOptions(command);
+		const logger = createLogger({ verbose: globals.verbose });
+		const resolved = path.resolve(process.cwd(), pathArg);
+		if (fs.existsSync(resolved)) {
+			if (fs.statSync(resolved).isDirectory()) {
+				logger.error("Path must be a file, not a directory.");
+				process.exit(1);
+			}
+			if (!options.force) {
+				logger.error(`File already exists: ${resolved}. Use --force to overwrite.`);
+				process.exit(1);
+			}
+		}
+		const dir = path.dirname(resolved);
+		if (dir !== ".") fs.mkdirSync(dir, { recursive: true });
+		logger.debug(`Generating keypair and writing to ${resolved}`);
+		const keypair = Keypair.generate();
+		fs.writeFileSync(resolved, JSON.stringify(Array.from(keypair.secretKey)), "utf8");
+		const publicKey = keypair.publicKey.toBase58();
+		if (globals.json) {
+			printOutput("json", { data: {
+				publicKey,
+				path: resolved
+			} });
+			return;
+		}
+		console.log(`Wallet saved to ${resolved}`);
+		console.log(`Public key: ${publicKey}`);
+		console.log("Fund this address to use it.");
+	}));
+}
+
+//#endregion
 //#region src/bin.ts
 const program = new Command();
 program.name("predictarena").description("PredictArena CLI for DFlow prediction markets").option("--json", "Output full JSON payloads").option("--verbose", "Enable verbose logging");
@@ -528,6 +567,7 @@ registerEventsCommand(program);
 registerMarketsCommand(program);
 registerTradesCommand(program);
 registerSearchCommand(program);
+registerWalletCommand(program);
 program.parseAsync(process.argv);
 
 //#endregion

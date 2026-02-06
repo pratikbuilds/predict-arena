@@ -1,5 +1,5 @@
 {
-  "name": "predictarena",
+  "name": "@pratikbuilds/predictarena",
   "version": "0.1.1",
   "description": "PredictArena CLI for DFlow prediction markets",
   "type": "module",

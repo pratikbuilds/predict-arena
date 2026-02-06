@@ -17,13 +17,13 @@ Start with **SKILL.md** for complete integration guidance.
 ## Install (deployed CLI)
 
 ```bash
-npm install -g predictarena
+npm install -g @pratikbuilds/predictarena
 ```
 
 Or run without installing:
 
 ```bash
-npx predictarena <command> [options]
+npx @pratikbuilds/predictarena <command> [options]
 ```
 
 ## Run

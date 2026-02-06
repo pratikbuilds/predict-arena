@@ -21,3 +21,11 @@ export function getTradeApiBase(): string {
 export function getApiKey(): string | undefined {
   return process.env.DFLOW_API_KEY || process.env.PREDICTARENA_API_KEY;
 }
+
+export function getSolanaRpcUrl(): string | undefined {
+  return (
+    process.env.SOLANA_RPC_URL ||
+    process.env.PREDICTARENA_RPC_URL ||
+    process.env.DFLOW_RPC_URL
+  );
+}

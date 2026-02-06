@@ -1,6 +1,13 @@
 import { requestJson } from "./client";
 import { getTradeApiBase } from "../utils/config";
-import type { OrderResponse, SlippageTolerance, PlatformFeeMode, OrderPrioritizationFeeLamports, IncludeJitoSandwichMitigationAccount } from "../types/trade";
+import type {
+  OrderResponse,
+  OrderStatusResponse,
+  SlippageTolerance,
+  PlatformFeeMode,
+  OrderPrioritizationFeeLamports,
+  IncludeJitoSandwichMitigationAccount,
+} from "../types/trade";
 
 const base = () => getTradeApiBase();
 
@@ -81,8 +88,27 @@ export async function getOrder(params: {
   });
 }
 
-export async function getOrderStatus(orderId: string): Promise<unknown> {
-  return requestJson<unknown>(base(), "/order-status", {
-    query: { orderId },
+export async function getOrderStatus(
+  signature: string,
+  lastValidBlockHeight?: number,
+): Promise<OrderStatusResponse> {
+  return requestJson<OrderStatusResponse>(base(), "/order-status", {
+    query: { signature, lastValidBlockHeight },
   });
+}
+
+/**
+ * Returns a map of mint address -> decimals for all tokens the Trade API has seen.
+ * Use when order.routePlan is missing to get decimals for outcome/unknown mints.
+ */
+export async function getTokensWithDecimals(): Promise<Record<string, number>> {
+  const raw = await requestJson<[string, number][]>(
+    base(),
+    "/tokens-with-decimals",
+  );
+  const map: Record<string, number> = {};
+  for (const [mint, decimals] of raw) {
+    map[mint] = decimals;
+  }
+  return map;
 }

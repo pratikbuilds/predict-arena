@@ -243,6 +243,26 @@ interface OrderResponse {
   routePlan?: RoutePlanLeg[];
   transaction?: string;
 }
+type OrderStatus = "pending" | "expired" | "failed" | "open" | "pendingClose" | "closed";
+interface Fill {
+  signature: string;
+  inputMint: string;
+  inAmount: string;
+  outputMint: string;
+  outAmount: string;
+}
+interface Revert {
+  signature: string;
+  mint: string;
+  amount: string;
+}
+interface OrderStatusResponse {
+  status: OrderStatus;
+  inAmount: string;
+  outAmount: string;
+  fills?: Fill[];
+  reverts?: Revert[];
+}
 //#endregion
 //#region src/api/trade.d.ts
 declare function getOrder(params: {
@@ -281,7 +301,12 @@ declare function getOrder(params: {
   allowAsyncExec?: boolean;
   restrictRevertMint?: boolean;
 }): Promise<OrderResponse>;
-declare function getOrderStatus(orderId: string): Promise<unknown>;
+declare function getOrderStatus(signature: string, lastValidBlockHeight?: number): Promise<OrderStatusResponse>;
+/**
+ * Returns a map of mint address -> decimals for all tokens the Trade API has seen.
+ * Use when order.routePlan is missing to get decimals for outcome/unknown mints.
+ */
+declare function getTokensWithDecimals(): Promise<Record<string, number>>;
 //#endregion
-export { DynamicRoutePlanLeg, ErrorResponse, EventResponse, EventsResponse, ExecutionMode, FilterOutcomeMintsRequest, FilterOutcomeMintsResponse, IncludeJitoSandwichMitigationAccount, MarketAccountInfo, MarketResponse, MarketStatus, MarketsResponse, OrderPrioritizationFeeLamports, OrderResponse, Orderbook, PlatformFee, PlatformFeeMode, PrioritizationType, RoutePlanLeg, SearchResponse, SeriesListResponse, SeriesResponse, SeriesResponseSingle, SettlementSource, SingleEventResponse, SingleMarketResponse, SingleMarketRoutePlanLeg, SingleTradeResponse, SlippageTolerance, SortField, SortMethod, TagsByCategoriesResponse, TradesResponse, filterOutcomeMints, getEvent, getEvents, getMarket, getMarketByMint, getMarkets, getOrder, getOrderStatus, getOrderbookByMint, getOrderbookByTicker, getSeries, getSeriesByTicker, getTagsByCategories, getTrades, getTradesByMint, searchEvents };
+export { DynamicRoutePlanLeg, ErrorResponse, EventResponse, EventsResponse, ExecutionMode, Fill, FilterOutcomeMintsRequest, FilterOutcomeMintsResponse, IncludeJitoSandwichMitigationAccount, MarketAccountInfo, MarketResponse, MarketStatus, MarketsResponse, OrderPrioritizationFeeLamports, OrderResponse, OrderStatus, OrderStatusResponse, Orderbook, PlatformFee, PlatformFeeMode, PrioritizationType, Revert, RoutePlanLeg, SearchResponse, SeriesListResponse, SeriesResponse, SeriesResponseSingle, SettlementSource, SingleEventResponse, SingleMarketResponse, SingleMarketRoutePlanLeg, SingleTradeResponse, SlippageTolerance, SortField, SortMethod, TagsByCategoriesResponse, TradesResponse, filterOutcomeMints, getEvent, getEvents, getMarket, getMarketByMint, getMarkets, getOrder, getOrderStatus, getOrderbookByMint, getOrderbookByTicker, getSeries, getSeriesByTicker, getTagsByCategories, getTokensWithDecimals, getTrades, getTradesByMint, searchEvents };
 //# sourceMappingURL=index.d.mts.map

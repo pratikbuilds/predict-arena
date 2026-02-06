@@ -10,6 +10,9 @@ function getTradeApiBase() {
 function getApiKey() {
 	return process.env.DFLOW_API_KEY || process.env.PREDICTARENA_API_KEY;
 }
+function getSolanaRpcUrl() {
+	return process.env.SOLANA_RPC_URL || process.env.PREDICTARENA_RPC_URL || process.env.DFLOW_RPC_URL;
+}
 
 //#endregion
 //#region src/api/client.ts
@@ -95,9 +98,9 @@ function safeJsonParse(text) {
 
 //#endregion
 //#region src/api/metadata.ts
-const base = () => getMetadataApiBase();
+const base$1 = () => getMetadataApiBase();
 async function getEvents(opts) {
-	return requestJson(base(), "/api/v1/events", { query: {
+	return requestJson(base$1(), "/api/v1/events", { query: {
 		limit: opts.limit,
 		cursor: opts.cursor,
 		seriesTickers: opts.seriesTickers,
@@ -109,10 +112,10 @@ async function getEvents(opts) {
 	} });
 }
 async function getEvent(eventId, opts) {
-	return requestJson(base(), `/api/v1/event/${eventId}`, { query: { withNestedMarkets: opts?.withNestedMarkets } });
+	return requestJson(base$1(), `/api/v1/event/${eventId}`, { query: { withNestedMarkets: opts?.withNestedMarkets } });
 }
 async function getMarkets(opts) {
-	return requestJson(base(), "/api/v1/markets", { query: {
+	return requestJson(base$1(), "/api/v1/markets", { query: {
 		limit: opts.limit,
 		cursor: opts.cursor,
 		status: opts.status,
@@ -122,19 +125,19 @@ async function getMarkets(opts) {
 	} });
 }
 async function getMarket(marketId) {
-	return requestJson(base(), `/api/v1/market/${marketId}`);
+	return requestJson(base$1(), `/api/v1/market/${marketId}`);
 }
 async function getMarketByMint(mintAddress) {
-	return requestJson(base(), `/api/v1/market/by-mint/${mintAddress}`);
+	return requestJson(base$1(), `/api/v1/market/by-mint/${mintAddress}`);
 }
 async function getOrderbookByTicker(marketTicker) {
-	return requestJson(base(), `/api/v1/orderbook/${marketTicker}`);
+	return requestJson(base$1(), `/api/v1/orderbook/${marketTicker}`);
 }
 async function getOrderbookByMint(mintAddress) {
-	return requestJson(base(), `/api/v1/orderbook/by-mint/${mintAddress}`);
+	return requestJson(base$1(), `/api/v1/orderbook/by-mint/${mintAddress}`);
 }
 async function getSeries(opts) {
-	return requestJson(base(), "/api/v1/series", { query: {
+	return requestJson(base$1(), "/api/v1/series", { query: {
 		category: opts.category,
 		tags: opts.tags,
 		isInitialized: opts.isInitialized,
@@ -142,13 +145,13 @@ async function getSeries(opts) {
 	} });
 }
 async function getSeriesByTicker(seriesTicker) {
-	return requestJson(base(), `/api/v1/series/${seriesTicker}`);
+	return requestJson(base$1(), `/api/v1/series/${seriesTicker}`);
 }
 async function getTagsByCategories() {
-	return requestJson(base(), "/api/v1/tags_by_categories");
+	return requestJson(base$1(), "/api/v1/tags_by_categories");
 }
 async function searchEvents(opts) {
-	return requestJson(base(), "/api/v1/search", { query: {
+	return requestJson(base$1(), "/api/v1/search", { query: {
 		q: opts.q,
 		sort: opts.sort,
 		order: opts.order,
@@ -159,7 +162,7 @@ async function searchEvents(opts) {
 	} });
 }
 async function getTrades(opts) {
-	return requestJson(base(), "/api/v1/trades", { query: {
+	return requestJson(base$1(), "/api/v1/trades", { query: {
 		limit: opts.limit,
 		cursor: opts.cursor,
 		ticker: opts.ticker,
@@ -168,16 +171,74 @@ async function getTrades(opts) {
 	} });
 }
 async function getTradesByMint(mintAddress) {
-	return requestJson(base(), `/api/v1/trades/by-mint/${mintAddress}`);
+	return requestJson(base$1(), `/api/v1/trades/by-mint/${mintAddress}`);
 }
 async function filterOutcomeMints(addresses) {
 	const body = { addresses };
-	return requestJson(base(), "/api/v1/filter_outcome_mints", {
+	return requestJson(base$1(), "/api/v1/filter_outcome_mints", {
 		method: "POST",
 		body
 	});
 }
 
 //#endregion
-export { getMarketByMint as a, getOrderbookByTicker as c, getTagsByCategories as d, getTrades as f, getTradeApiBase as g, requestJson as h, getMarket as i, getSeries as l, searchEvents as m, getEvent as n, getMarkets as o, getTradesByMint as p, getEvents as r, getOrderbookByMint as s, filterOutcomeMints as t, getSeriesByTicker as u };
-//# sourceMappingURL=metadata-W-pHA1-K.mjs.map
+//#region src/api/trade.ts
+const base = () => getTradeApiBase();
+async function getOrder(params) {
+	return requestJson(base(), "/order", { query: {
+		inputMint: params.inputMint,
+		outputMint: params.outputMint,
+		amount: params.amount,
+		userPublicKey: params.userPublicKey,
+		slippageBps: params.slippageBps,
+		predictionMarketSlippageBps: params.predictionMarketSlippageBps,
+		platformFeeBps: params.platformFeeBps,
+		platformFeeMode: params.platformFeeMode,
+		platformFeeScale: params.platformFeeScale,
+		feeAccount: params.feeAccount,
+		referralAccount: params.referralAccount,
+		positiveSlippageFeeAccount: params.positiveSlippageFeeAccount,
+		positiveSlippageLimitPct: params.positiveSlippageLimitPct,
+		sponsor: params.sponsor,
+		destinationTokenAccount: params.destinationTokenAccount,
+		destinationWallet: params.destinationWallet,
+		revertWallet: params.revertWallet,
+		wrapAndUnwrapSol: params.wrapAndUnwrapSol,
+		prioritizationFeeLamports: params.prioritizationFeeLamports,
+		computeUnitPriceMicroLamports: params.computeUnitPriceMicroLamports,
+		dynamicComputeUnitLimit: params.dynamicComputeUnitLimit,
+		includeJitoSandwichMitigationAccount: params.includeJitoSandwichMitigationAccount,
+		predictionMarketInitPayer: params.predictionMarketInitPayer,
+		outcomeAccountRentRecipient: params.outcomeAccountRentRecipient,
+		perLegSlippage: params.perLegSlippage,
+		dexes: params.dexes,
+		excludeDexes: params.excludeDexes,
+		onlyDirectRoutes: params.onlyDirectRoutes,
+		maxRouteLength: params.maxRouteLength,
+		onlyJitRoutes: params.onlyJitRoutes,
+		forJitoBundle: params.forJitoBundle,
+		allowSyncExec: params.allowSyncExec,
+		allowAsyncExec: params.allowAsyncExec,
+		restrictRevertMint: params.restrictRevertMint
+	} });
+}
+async function getOrderStatus(signature, lastValidBlockHeight) {
+	return requestJson(base(), "/order-status", { query: {
+		signature,
+		lastValidBlockHeight
+	} });
+}
+/**
+* Returns a map of mint address -> decimals for all tokens the Trade API has seen.
+* Use when order.routePlan is missing to get decimals for outcome/unknown mints.
+*/
+async function getTokensWithDecimals() {
+	const raw = await requestJson(base(), "/tokens-with-decimals");
+	const map = {};
+	for (const [mint, decimals] of raw) map[mint] = decimals;
+	return map;
+}
+
+//#endregion
+export { searchEvents as _, getEvent as a, getMarketByMint as c, getOrderbookByTicker as d, getSeries as f, getTradesByMint as g, getTrades as h, filterOutcomeMints as i, getMarkets as l, getTagsByCategories as m, getOrderStatus as n, getEvents as o, getSeriesByTicker as p, getTokensWithDecimals as r, getMarket as s, getOrder as t, getOrderbookByMint as u, ApiError as v, getSolanaRpcUrl as y };
+//# sourceMappingURL=trade-hdAe-DAn.mjs.map

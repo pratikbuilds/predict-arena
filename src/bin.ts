@@ -7,6 +7,7 @@ import { registerMarketsCommand } from "./commands/markets";
 import { registerTradesCommand } from "./commands/trades";
 import { registerSearchCommand } from "./commands/search";
 import { registerWalletCommand } from "./commands/wallet";
+import { registerTradeCommand } from "./commands/trade";
 
 const program = new Command();
 
@@ -23,5 +24,6 @@ registerMarketsCommand(program);
 registerTradesCommand(program);
 registerSearchCommand(program);
 registerWalletCommand(program);
+registerTradeCommand(program);
 
 program.parseAsync(process.argv);

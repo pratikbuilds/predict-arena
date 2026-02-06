@@ -77,3 +77,33 @@ export interface OrderResponse {
   routePlan?: RoutePlanLeg[];
   transaction?: string;
 }
+
+export type OrderStatus =
+  | "pending"
+  | "expired"
+  | "failed"
+  | "open"
+  | "pendingClose"
+  | "closed";
+
+export interface Fill {
+  signature: string;
+  inputMint: string;
+  inAmount: string;
+  outputMint: string;
+  outAmount: string;
+}
+
+export interface Revert {
+  signature: string;
+  mint: string;
+  amount: string;
+}
+
+export interface OrderStatusResponse {
+  status: OrderStatus;
+  inAmount: string;
+  outAmount: string;
+  fills?: Fill[];
+  reverts?: Revert[];
+}

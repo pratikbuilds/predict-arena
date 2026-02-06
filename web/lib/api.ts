@@ -10,8 +10,6 @@ export interface MarketEvent {
   imageUrl: string | null;
   volume: number;
   volume24h: number;
-  liquidity: number;
-  openInterest: number;
   markets?: {
     ticker: string;
     title: string;
@@ -34,9 +32,9 @@ export async function fetchActiveEvents(limit = 6): Promise<MarketEvent[]> {
   return data.events ?? [];
 }
 
-/** API values are in cents — convert to dollars then format. */
-export function formatDollar(cents: number): string {
-  const dollars = cents / 100;
+/** Format a dollar amount. Event/market API returns dollars; set inCents true only when value is in cents. */
+export function formatDollar(value: number, inCents = false): string {
+  const dollars = inCents ? value / 100 : value;
   if (dollars >= 1_000_000) return `$${(dollars / 1_000_000).toFixed(1)}M`;
   if (dollars >= 1_000) return `$${(dollars / 1_000).toFixed(1)}K`;
   return `$${dollars.toFixed(0)}`;

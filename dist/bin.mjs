@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-import { _ as searchEvents, a as getEvent, c as getMarketByMint, d as getOrderbookByTicker, f as getSeries, h as getTrades, l as getMarkets, m as getTagsByCategories, n as getOrderStatus, o as getEvents, p as getSeriesByTicker, s as getMarket, t as getOrder, v as ApiError, y as getSolanaRpcUrl } from "./trade-hdAe-DAn.mjs";
+import { a as getEvent, b as getSolanaRpcUrl, c as getMarketByMint, f as getOrderbookByTicker, g as getTrades, h as getTagsByCategories, i as filterOutcomeMints, l as getMarkets, m as getSeriesByTicker, n as getOrderStatus, o as getEvents, p as getSeries, s as getMarket, t as getOrder, u as getMarketsBatch, v as searchEvents, y as ApiError } from "./trade-COyiDZdi.mjs";
 import { Command } from "commander";
 import chalk from "chalk";
 import fs from "node:fs";
 import path from "node:path";
 import { Connection, Keypair, PublicKey, VersionedTransaction } from "@solana/web3.js";
+import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 //#region src/utils/hints.ts
 function eventsDescribeSchema() {
@@ -522,9 +523,34 @@ function registerSearchCommand(program) {
 }
 
 //#endregion
+//#region src/utils/wallet.ts
+var WalletLoadError = class extends Error {
+	constructor(message) {
+		super(message);
+		this.name = "WalletLoadError";
+	}
+};
+function loadKeypairFromPath(filePath) {
+	const resolved = path.resolve(process.cwd(), filePath);
+	if (!fs.existsSync(resolved)) throw new WalletLoadError(`Wallet file not found: ${resolved}`);
+	if (fs.statSync(resolved).isDirectory()) throw new WalletLoadError(`Path is a directory, expected a file: ${resolved}`);
+	const raw = fs.readFileSync(resolved, "utf8");
+	let arr;
+	try {
+		arr = JSON.parse(raw);
+	} catch {
+		throw new WalletLoadError(`Invalid JSON in wallet file: ${resolved}`);
+	}
+	if (!Array.isArray(arr) || arr.length !== 64) throw new WalletLoadError(`Wallet file must be a JSON array of 64 numbers (secret key): ${resolved}`);
+	const secretKey = Uint8Array.from(arr);
+	return Keypair.fromSecretKey(secretKey);
+}
+
+//#endregion
 //#region src/commands/wallet.ts
 function registerWalletCommand(program) {
-	applyGlobalOptions(program.command("wallet").description("Create or manage Solana keypair for agent signing").command("create <path>").description("Generate keypair, save to file, print public key for funding").action(async (pathArg, _options, command) => {
+	const wallet = program.command("wallet").description("Create or manage Solana keypair for agent signing");
+	const create = wallet.command("create <path>").description("Generate keypair, save to file, print public key for funding").action(async (pathArg, _options, command) => {
 		const globals = getGlobalOptions(command);
 		const logger = createLogger({ verbose: globals.verbose });
 		const resolved = path.resolve(process.cwd(), pathArg);
@@ -550,31 +576,83 @@ function registerWalletCommand(program) {
 		console.log(`Wallet saved to ${resolved}`);
 		console.log(`Public key: ${publicKey}`);
 		console.log("Fund this address to use it.");
-	}));
-}
-
-//#endregion
-//#region src/utils/wallet.ts
-var WalletLoadError = class extends Error {
-	constructor(message) {
-		super(message);
-		this.name = "WalletLoadError";
-	}
-};
-function loadKeypairFromPath(filePath) {
-	const resolved = path.resolve(process.cwd(), filePath);
-	if (!fs.existsSync(resolved)) throw new WalletLoadError(`Wallet file not found: ${resolved}`);
-	if (fs.statSync(resolved).isDirectory()) throw new WalletLoadError(`Path is a directory, expected a file: ${resolved}`);
-	const raw = fs.readFileSync(resolved, "utf8");
-	let arr;
-	try {
-		arr = JSON.parse(raw);
-	} catch {
-		throw new WalletLoadError(`Invalid JSON in wallet file: ${resolved}`);
-	}
-	if (!Array.isArray(arr) || arr.length !== 64) throw new WalletLoadError(`Wallet file must be a JSON array of 64 numbers (secret key): ${resolved}`);
-	const secretKey = Uint8Array.from(arr);
-	return Keypair.fromSecretKey(secretKey);
+	});
+	const balance = wallet.command("balance").description("Show SOL and token balances. Use --wallet (keypair path) or --pubkey (read-only address).").option("--wallet <path>", "Path to wallet keypair JSON file").option("--pubkey <address>", "Solana public key (read-only)").option("--rpc <url>", "Solana RPC URL (or set SOLANA_RPC_URL)").action(async (options, command) => {
+		const globals = getGlobalOptions(command);
+		const logger = createLogger({ verbose: globals.verbose });
+		let address;
+		if (options.pubkey) try {
+			address = new PublicKey(options.pubkey).toBase58();
+		} catch {
+			logger.error("Invalid --pubkey: must be a valid Solana base58 address.");
+			process.exit(1);
+		}
+		else {
+			const walletPath = options.wallet || process.env.PREDICTARENA_WALLET || process.env.WALLET_PATH;
+			if (!walletPath) {
+				logger.error("Use --wallet <path> or --pubkey <address> (or set PREDICTARENA_WALLET).");
+				process.exit(1);
+			}
+			try {
+				address = loadKeypairFromPath(walletPath).publicKey.toBase58();
+			} catch (err) {
+				if (err instanceof WalletLoadError) {
+					logger.error(err.message);
+					process.exit(1);
+				}
+				throw err;
+			}
+		}
+		const rpcUrl = options.rpc || getSolanaRpcUrl();
+		if (!rpcUrl) {
+			logger.error("RPC URL required: use --rpc <url> or set SOLANA_RPC_URL.");
+			process.exit(1);
+		}
+		const connection = new Connection(rpcUrl);
+		const owner = new PublicKey(address);
+		const [solBalance, tokenAccountsLegacy, tokenAccounts2022] = await Promise.all([
+			connection.getBalance(owner),
+			connection.getParsedTokenAccountsByOwner(owner, { programId: TOKEN_PROGRAM_ID }),
+			connection.getParsedTokenAccountsByOwner(owner, { programId: TOKEN_2022_PROGRAM_ID })
+		]);
+		const tokens = [];
+		for (const { account } of [...tokenAccountsLegacy.value, ...tokenAccounts2022.value]) {
+			const info = account.data.parsed?.info;
+			if (!info?.mint || !info?.tokenAmount) continue;
+			const amt = info.tokenAmount;
+			const raw = amt.amount ?? "0";
+			if (Number(raw) <= 0) continue;
+			tokens.push({
+				mint: info.mint,
+				rawAmount: raw,
+				decimals: amt.decimals ?? 6,
+				uiAmount: amt.uiAmount ?? null
+			});
+		}
+		const data = {
+			address,
+			sol: {
+				lamports: solBalance,
+				sol: solBalance / 1e9
+			},
+			tokens
+		};
+		if (globals.json) {
+			printOutput("json", { data });
+			return;
+		}
+		console.log(`Address: ${address}`);
+		console.log(`SOL: ${data.sol.sol} (${data.sol.lamports} lamports)`);
+		if (tokens.length > 0) {
+			console.log("Tokens:");
+			for (const t of tokens) {
+				const ui = t.uiAmount != null ? t.uiAmount.toFixed(6) : t.rawAmount;
+				console.log(`  ${t.mint}: ${ui}`);
+			}
+		}
+	});
+	applyGlobalOptions(create);
+	applyGlobalOptions(balance);
 }
 
 //#endregion
@@ -904,9 +982,144 @@ function registerTradeCommand(program) {
 }
 
 //#endregion
+//#region src/api/positions.ts
+/**
+* Fetch prediction market positions for a wallet.
+* Uses Solana RPC (Token-2022 accounts) + DFlow Metadata API (filter outcome mints, markets batch).
+*/
+async function getPositions(connection, walletPublicKey) {
+	const owner = typeof walletPublicKey === "string" ? new PublicKey(walletPublicKey) : walletPublicKey;
+	const userTokens = (await connection.getParsedTokenAccountsByOwner(owner, { programId: TOKEN_2022_PROGRAM_ID })).value.map(({ account }) => {
+		const info = account.data.parsed?.info;
+		if (!info?.mint || !info?.tokenAmount) return null;
+		const amount = info.tokenAmount;
+		const rawBalance = amount.amount ?? "0";
+		if (Number(rawBalance) <= 0) return null;
+		return {
+			mint: info.mint,
+			rawBalance,
+			decimals: amount.decimals ?? 6,
+			uiAmount: amount.uiAmount ?? null
+		};
+	}).filter((t) => t !== null);
+	if (userTokens.length === 0) return [];
+	const { outcomeMints } = await filterOutcomeMints(userTokens.map((t) => t.mint));
+	if (outcomeMints.length === 0) return [];
+	const outcomeTokens = userTokens.filter((t) => outcomeMints.includes(t.mint));
+	const { markets } = await getMarketsBatch({ mints: outcomeMints });
+	const marketsByMint = /* @__PURE__ */ new Map();
+	for (const market of markets) {
+		const accounts = Object.values(market.accounts ?? {});
+		for (const acc of accounts) {
+			if (acc.yesMint) marketsByMint.set(acc.yesMint, market);
+			if (acc.noMint) marketsByMint.set(acc.noMint, market);
+		}
+	}
+	return outcomeTokens.map((token) => {
+		const market = marketsByMint.get(token.mint) ?? null;
+		if (!market) return {
+			mint: token.mint,
+			rawBalance: token.rawBalance,
+			decimals: token.decimals,
+			uiAmount: token.uiAmount,
+			position: "UNKNOWN",
+			market: null
+		};
+		const accounts = Object.values(market.accounts ?? {});
+		const isYes = accounts.some((a) => a.yesMint === token.mint);
+		const isNo = accounts.some((a) => a.noMint === token.mint);
+		const position = isYes ? "YES" : isNo ? "NO" : "UNKNOWN";
+		return {
+			mint: token.mint,
+			rawBalance: token.rawBalance,
+			decimals: token.decimals,
+			uiAmount: token.uiAmount,
+			position,
+			market
+		};
+	});
+}
+
+//#endregion
+//#region src/commands/positions.ts
+function formatPositionLine(p) {
+	const ticker = p.market?.ticker ?? "—";
+	const title = p.market?.title ?? p.mint.slice(0, 8) + "…";
+	const side = p.position;
+	const bal = p.uiAmount != null ? p.uiAmount.toFixed(4) : p.rawBalance;
+	return `${ticker}  ${side.padEnd(7)}  ${bal}  ${title}`;
+}
+function parsePubkey(address) {
+	try {
+		return new PublicKey(address).toBase58();
+	} catch {
+		return "";
+	}
+}
+function registerPositionsCommand(program) {
+	program.command("positions").description("List prediction market positions (Token-2022 outcome tokens). Use --wallet for your keypair or --pubkey for read-only lookup of any address.").option("--wallet <path>", "Path to wallet keypair JSON file").option("--pubkey <address>", "Solana public key (read-only; no keypair needed)").option("--rpc <url>", "Solana RPC URL (or set SOLANA_RPC_URL / PREDICTARENA_RPC_URL)").action(async (options, command) => {
+		const globals = getGlobalOptions(command);
+		const format = globals.json ? "json" : "plain";
+		const logger = createLogger({ verbose: globals.verbose });
+		let walletPublicKey;
+		if (options.pubkey) {
+			walletPublicKey = parsePubkey(options.pubkey);
+			if (!walletPublicKey) {
+				logger.error("Invalid --pubkey: must be a valid Solana base58 address.");
+				process.exit(1);
+			}
+			logger.debug(`Read-only lookup for pubkey ${walletPublicKey}...`);
+		} else {
+			const walletPath = options.wallet || process.env.PREDICTARENA_WALLET || process.env.WALLET_PATH;
+			if (!walletPath) {
+				logger.error("Use --wallet <path> or --pubkey <address> (or set PREDICTARENA_WALLET).");
+				process.exit(1);
+			}
+			try {
+				walletPublicKey = loadKeypairFromPath(walletPath).publicKey.toBase58();
+			} catch (err) {
+				if (err instanceof WalletLoadError) {
+					logger.error(err.message);
+					process.exit(1);
+				}
+				throw err;
+			}
+			logger.debug(`Fetching positions for ${walletPublicKey}...`);
+		}
+		const rpcUrl = options.rpc || getSolanaRpcUrl();
+		if (!rpcUrl) {
+			logger.error("RPC URL required: use --rpc <url> or set SOLANA_RPC_URL.");
+			process.exit(1);
+		}
+		const connection = new Connection(rpcUrl);
+		let list;
+		try {
+			list = await getPositions(connection, walletPublicKey);
+		} catch (err) {
+			logger.error(err instanceof Error ? err.message : String(err));
+			process.exit(1);
+		}
+		if (format === "json") {
+			printOutput("json", { data: {
+				wallet: walletPublicKey,
+				positions: list
+			} });
+			return;
+		}
+		if (list.length === 0) {
+			console.log("No prediction market positions found.");
+			return;
+		}
+		console.log("Ticker   Side     Balance  Market");
+		console.log("------   ----     -------  ------");
+		for (const p of list) console.log(formatPositionLine(p));
+	});
+}
+
+//#endregion
 //#region src/bin.ts
 const program = new Command();
-program.name("predictarena").description("PredictArena CLI for DFlow prediction markets").option("--json", "Output full JSON payloads").option("--verbose", "Enable verbose logging");
+program.name("predictarena").description("PredictArena CLI for prediction markets").option("--json", "Output full JSON payloads").option("--verbose", "Enable verbose logging");
 registerCategoriesCommand(program);
 registerSeriesCommand(program);
 registerEventsCommand(program);
@@ -915,6 +1128,7 @@ registerTradesCommand(program);
 registerSearchCommand(program);
 registerWalletCommand(program);
 registerTradeCommand(program);
+registerPositionsCommand(program);
 program.parseAsync(process.argv);
 
 //#endregion

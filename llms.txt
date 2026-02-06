@@ -2,18 +2,24 @@
 
 ## Overview
 
-PredictArena CLI for discovering and trading DFlow prediction markets on Solana. Designed for autonomous agents, trading bots, and automation scripts.
+PredictArena CLI for discovering and trading DFlow prediction markets on Solana.
 
 ## Key Files
 
 > /SKILL.md
-Comprehensive agent skill documentation. Start here for complete setup, commands, workflows, and best practices.
+Agent skill doc: setup, commands, workflows.
+
+> /HEARTBEAT.md
+Periodic checklist for agents: wallet, markets, pre-trade verification. Run every 15–30 min when trading.
 
 > /AGENTS.md
-Quick reference guide for agents. Essential commands and common workflows.
+Quick reference guide for agents.
+
+> https://pond.dflow.net/skill.md
+DFlow trading skill: API concepts, declarative vs imperative, platform fees, redemption flows. Essential commands and common workflows.
 
 > /AGENT_DOCS.md
-Documentation structure guide. Explains the complete agent documentation system, integration patterns, and maintenance procedures.
+Doc structure, integration patterns, maintenance.
 
 > /README.md
 Project overview, installation, and build instructions.
@@ -98,9 +104,7 @@ Prediction market compliance information.
 6. Discover markets: `node dist/bin.mjs markets list --json`
 7. Execute trades: `node dist/bin.mjs trade --wallet ... --input-mint ... --output-mint ... --amount ... --json`
 
-## Agent Integration
-
-For AI agents and automation:
+## Agent integration
 - Use `--json` flag on all commands for structured output
 - Always dry run trades first with `--dry-run`
 - Parse `data.trade` and `data.result` from trade output

@@ -125,6 +125,14 @@ interface FilterOutcomeMintsRequest {
 interface FilterOutcomeMintsResponse {
   outcomeMints: string[];
 }
+interface MarketsBatchRequest {
+  mints?: string[] | null;
+  tickers?: string[] | null;
+}
+interface MarketsBatchResponse {
+  markets: SingleMarketResponse[];
+  cursor?: number | null;
+}
 //#endregion
 //#region src/api/metadata.d.ts
 declare function getEvents(opts: {
@@ -178,6 +186,10 @@ declare function getTrades(opts: {
 }): Promise<TradesResponse>;
 declare function getTradesByMint(mintAddress: string): Promise<TradesResponse>;
 declare function filterOutcomeMints(addresses: string[]): Promise<FilterOutcomeMintsResponse>;
+declare function getMarketsBatch(opts: {
+  mints?: string[];
+  tickers?: string[];
+}): Promise<MarketsBatchResponse>;
 //#endregion
 //#region src/types/trade.d.ts
 type ExecutionMode = "sync" | "async";
@@ -308,5 +320,5 @@ declare function getOrderStatus(signature: string, lastValidBlockHeight?: number
  */
 declare function getTokensWithDecimals(): Promise<Record<string, number>>;
 //#endregion
-export { DynamicRoutePlanLeg, ErrorResponse, EventResponse, EventsResponse, ExecutionMode, Fill, FilterOutcomeMintsRequest, FilterOutcomeMintsResponse, IncludeJitoSandwichMitigationAccount, MarketAccountInfo, MarketResponse, MarketStatus, MarketsResponse, OrderPrioritizationFeeLamports, OrderResponse, OrderStatus, OrderStatusResponse, Orderbook, PlatformFee, PlatformFeeMode, PrioritizationType, Revert, RoutePlanLeg, SearchResponse, SeriesListResponse, SeriesResponse, SeriesResponseSingle, SettlementSource, SingleEventResponse, SingleMarketResponse, SingleMarketRoutePlanLeg, SingleTradeResponse, SlippageTolerance, SortField, SortMethod, TagsByCategoriesResponse, TradesResponse, filterOutcomeMints, getEvent, getEvents, getMarket, getMarketByMint, getMarkets, getOrder, getOrderStatus, getOrderbookByMint, getOrderbookByTicker, getSeries, getSeriesByTicker, getTagsByCategories, getTokensWithDecimals, getTrades, getTradesByMint, searchEvents };
+export { DynamicRoutePlanLeg, ErrorResponse, EventResponse, EventsResponse, ExecutionMode, Fill, FilterOutcomeMintsRequest, FilterOutcomeMintsResponse, IncludeJitoSandwichMitigationAccount, MarketAccountInfo, MarketResponse, MarketStatus, MarketsBatchRequest, MarketsBatchResponse, MarketsResponse, OrderPrioritizationFeeLamports, OrderResponse, OrderStatus, OrderStatusResponse, Orderbook, PlatformFee, PlatformFeeMode, PrioritizationType, Revert, RoutePlanLeg, SearchResponse, SeriesListResponse, SeriesResponse, SeriesResponseSingle, SettlementSource, SingleEventResponse, SingleMarketResponse, SingleMarketRoutePlanLeg, SingleTradeResponse, SlippageTolerance, SortField, SortMethod, TagsByCategoriesResponse, TradesResponse, filterOutcomeMints, getEvent, getEvents, getMarket, getMarketByMint, getMarkets, getMarketsBatch, getOrder, getOrderStatus, getOrderbookByMint, getOrderbookByTicker, getSeries, getSeriesByTicker, getTagsByCategories, getTokensWithDecimals, getTrades, getTradesByMint, searchEvents };
 //# sourceMappingURL=index.d.mts.map

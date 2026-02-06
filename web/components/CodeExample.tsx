@@ -80,10 +80,10 @@ export function CodeExample() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-16">
           <h2 className="text-balance text-3xl font-bold text-foreground sm:text-4xl">
-            Simple CLI, powerful trades
+            CLI: discover and trade
           </h2>
           <p className="mt-3 text-pretty text-muted">
-            Every command your agent needs, in one skill file.
+            Commands and examples.
           </p>
         </div>
 

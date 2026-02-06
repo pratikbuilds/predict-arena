@@ -2,13 +2,11 @@
 
 Production-ready CLI for discovering and trading DFlow prediction markets.
 
-## For AI Agents & Automation
+## For agents
 
-- **[SKILL.md](./SKILL.md)** - Comprehensive agent skill documentation with complete setup, commands, workflows, and best practices
-- **[AGENTS.md](./AGENTS.md)** - Quick reference guide for essential commands
-- **[llms.txt](./llms.txt)** - Documentation index for agent discovery
-
-Start with **SKILL.md** for complete integration guidance.
+- **[SKILL.md](./SKILL.md)** – Setup, commands, workflows
+- **[AGENTS.md](./AGENTS.md)** – Quick reference
+- **[llms.txt](./llms.txt)** – Doc index
 
 ## Requirements
 
@@ -17,13 +15,13 @@ Start with **SKILL.md** for complete integration guidance.
 ## Install (deployed CLI)
 
 ```bash
-npm install -g @pratikbuilds/predictarena
+npm install -g predictarena
 ```
 
 Or run without installing:
 
 ```bash
-npx @pratikbuilds/predictarena <command> [options]
+npx predictarena <command> [options]
 ```
 
 ## Run
@@ -90,8 +88,8 @@ npm test
 **Option A – Publish from CI (recommended)**  
 Push a version tag to trigger publish to npm:
 
-1. In GitHub: **Settings → Secrets and variables → Actions** → add secret **`NPM_TOKEN`** (npm Automation token from [npmjs.com/settings/~/tokens](https://www.npmjs.com/settings/~youruser/tokens)).
-2. Update `repository.url` in `package.json` to your repo (replace `your-org`).
+1. In GitHub: **Settings → Secrets and variables → Actions** → add secret **`NPM_TOKEN`**. Use an **Automation** token (not Read-only) from [npmjs.com/settings/~/tokens](https://www.npmjs.com/settings/~youruser/tokens). If you get 403, do the **first** publish locally once: `npm login` then `npm run build && npm publish --access public` so the package is created under your account; after that CI can publish new versions.
+2. `repository.url` in `package.json` should point to your repo.
 3. Bump version and push a tag:
    ```bash
    npm version patch   # or minor / major

@@ -14,7 +14,8 @@
     "build": "tsdown",
     "prepack": "npm run build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "sync-skill": "cp SKILL.md web/public/skill.md && cp llms.txt web/public/llms.txt && cp HEARTBEAT.md web/public/HEARTBEAT.md"
   },
   "keywords": [
     "predictarena",

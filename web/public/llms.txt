@@ -1,0 +1,127 @@
+# PredictArena Documentation
+
+## Overview
+
+PredictArena CLI for discovering and trading DFlow prediction markets on Solana.
+
+## Key Files
+
+> /SKILL.md
+Agent skill doc: setup, commands, workflows.
+
+> /HEARTBEAT.md
+Periodic checklist for agents: wallet, markets, pre-trade verification. Run every 15–30 min when trading.
+
+> /AGENTS.md
+Quick reference guide for agents.
+
+> https://pond.dflow.net/skill.md
+DFlow trading skill: API concepts, declarative vs imperative, platform fees, redemption flows. Essential commands and common workflows.
+
+> /AGENT_DOCS.md
+Doc structure, integration patterns, maintenance.
+
+> /README.md
+Project overview, installation, and build instructions.
+
+> /package.json
+Project metadata, dependencies, and npm scripts.
+
+## Source Code
+
+> /src/bin.ts
+CLI entry point. Registers all commands and global options.
+
+> /src/commands/wallet.ts
+Wallet creation and management commands.
+
+> /src/commands/trade.ts
+Trade execution command with full order flow and error handling.
+
+> /src/commands/markets.ts
+Market discovery commands: list, get, get-by-mint, orderbook.
+
+> /src/commands/events.ts
+Event discovery commands: list, get, describe.
+
+> /src/commands/series.ts
+Series template commands: list by category, get by ticker.
+
+> /src/commands/categories.ts
+Category listing for market organization.
+
+> /src/commands/search.ts
+Event and market search by query string.
+
+> /src/commands/trades.ts
+Trade history listing and filtering.
+
+> /src/api/trade.ts
+Trade API client: getOrder, getOrderStatus, getTokensWithDecimals.
+
+> /src/api/metadata.ts
+Metadata API client: markets, events, series, categories, orderbook.
+
+> /src/trading/signAndSend.ts
+Transaction signing and submission with error handling.
+
+> /src/utils/wallet.ts
+Wallet loading utilities and error handling.
+
+> /src/utils/config.ts
+Environment configuration: RPC URLs, API endpoints, API keys.
+
+> /src/types/trade.ts
+TypeScript types for trade orders, responses, and parameters.
+
+## External Resources
+
+> https://docs.dflow.net/build/trading-api/introduction
+DFlow Trade API reference documentation.
+
+> https://docs.dflow.net/build/metadata-api/introduction
+DFlow Metadata API reference documentation.
+
+> https://pond.dflow.net/skill.md
+DFlow trading skill documentation (reference pattern).
+
+> https://pond.dflow.net/llms.txt
+DFlow documentation index.
+
+> https://docs.dflow.net/build/api-key
+Request production API key for rate limit removal.
+
+> https://docs.dflow.net/legal/prediction-market-compliance
+Prediction market compliance information.
+
+## Quick Start
+
+1. Read /SKILL.md for complete setup instructions
+2. Run `npm install && npm run build`
+3. Create wallet with `node dist/bin.mjs wallet create ./wallet.json --json`
+4. Fund the wallet with SOL/USDC
+5. Set environment: `export SOLANA_RPC_URL="..."`
+6. Discover markets: `node dist/bin.mjs markets list --json`
+7. Execute trades: `node dist/bin.mjs trade --wallet ... --input-mint ... --output-mint ... --amount ... --json`
+
+## Agent integration
+- Use `--json` flag on all commands for structured output
+- Always dry run trades first with `--dry-run`
+- Parse `data.trade` and `data.result` from trade output
+- Handle API errors gracefully (404, 400, 500)
+- Use environment variables for RPC URLs and wallet paths
+- Monitor transaction signatures with `data.result.signature`
+
+## Environment Variables
+
+- `SOLANA_RPC_URL` or `PREDICTARENA_RPC_URL`: RPC endpoint
+- `METADATA_API_BASE` or `DFLOW_METADATA_API_URL`: Metadata API
+- `TRADE_API_BASE` or `DFLOW_TRADE_API_URL`: Trade API
+- `DFLOW_API_KEY` or `PREDICTARENA_API_KEY`: API key
+- `PREDICTARENA_WALLET` or `WALLET_PATH`: Default wallet path
+
+## Known Mints
+
+- USDC: `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
+- SOL: `So11111111111111111111111111111111111111112`
+- CASH: `CASHx9KJUStyftLFWGvEVf59SGeG9sh5FfcnZMVPCASH`

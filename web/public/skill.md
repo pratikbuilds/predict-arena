@@ -1,37 +1,47 @@
 ---
 name: predictarena
-version: "0.1.0"
-description: Official skill for autonomous prediction market trading on Solana. Setup first, then trade via the PredictArena CLI.
-homepage: https://github.com/pratikbuilds/predict-arena
+description: Trade prediction market outcome tokens on Solana using DFlow. Discovery, wallet management, and automated trading for agents.
 license: MIT
 metadata:
   author: PredictArena
+  version: "0.1.0"
   requires: ["node >= 18"]
-  category: prediction-markets
-  api_base: https://docs.dflow.net
 ---
 
-# PredictArena — Agent Trading Skill
+# PredictArena Trading Skill
 
-This skill teaches an agent how to **seek profit in prediction markets on Solana** using the PredictArena CLI. It is not a manual; it's a **decision loop**: discover opportunities, score expected value, manage risk, execute, and continuously learn. Do the setup once, then run the trading loop.
+Profit-seeking trading on Solana prediction markets via the CLI. This is a **decision loop**, not a setup manual: discover, score EV, manage risk, execute, and learn.
 
 **Flow:** Setup → Discover → Score EV → Dry run → Execute → Monitor → Exit → Learn.
 
 ## Key Files
 
-| File              | URL / Path                                                                 | Purpose                                                    |
-| ----------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Skill (this file) | [SKILL.md](./SKILL.md)                                                     | Full setup, commands, workflows                            |
-| Heartbeat         | [HEARTBEAT.md](./HEARTBEAT.md)                                             | Periodic sync — run every 15–30 min when actively trading  |
-| AGENTS.md         | [AGENTS.md](./AGENTS.md)                                                   | Quick reference for agents                                 |
-| DFlow Skill       | https://pond.dflow.net/skill.md                                            | API concepts, platform fees, redemption                    |
-| DFlow Docs        | https://docs.dflow.net                                                     | Trade API, Metadata API, API keys                          |
+| File              | URL / Path                      | Purpose                                                    |
+| ----------------- | ------------------------------- | ---------------------------------------------------------- |
+| Skill (this file) | [SKILL.md](./SKILL.md)          | Full setup, commands, workflows                            |
+| Heartbeat         | [HEARTBEAT.md](./HEARTBEAT.md)  | Periodic sync checklist — run every 15–30 min when trading |
+| DFlow Skill       | https://pond.dflow.net/skill.md |
+| AGENTS.md         | [AGENTS.md](./AGENTS.md)        | Quick reference for agents                                 |
+| DFlow Docs        | https://docs.dflow.net          | Trade API, Metadata API, API keys                          |
 
-## Security
+## Setting Up Your Heartbeat
 
-- **Wallet files**: Never log, commit, or expose keypair JSON. Use environment variables for wallet path (`PREDICTARENA_WALLET`, `WALLET_PATH`). Treat the keypair like a password.
-- **RPC**: Use a dedicated RPC endpoint for production; public RPCs are rate-limited and unreliable for trading.
-- **API keys**: Optional for dev (rate-limited). For production, use `DFLOW_API_KEY` or `PREDICTARENA_API_KEY` and only send to DFlow/PredictArena endpoints.
+If your framework supports scheduled tasks or a heartbeat system, point it at the heartbeat URL with a ~15–30 minute interval when actively trading:
+
+```
+https://raw.githubusercontent.com/pratikbuilds/predict-arena/main/HEARTBEAT.md
+```
+
+**If you don't have a scheduler**: Fetch the heartbeat at the start of each work session, or between task cycles. It's a lightweight checklist for wallet balance, market discovery, and pre-trade verification.
+
+**What the heartbeat gives you**:
+
+- Version checks (re-fetch SKILL.md if version changed)
+- CLI and environment verification
+- Wallet funding status
+- Active market discovery prompts
+- Pre-trade checklist (dry run, mint verification)
+- Market lifecycle reminders
 
 ## Profit-Seeking Guidance (Core Strategy)
 
@@ -77,98 +87,9 @@ Have exits defined **before entry**:
 - **Stop-loss**: exit when evidence shifts against your thesis.
 - **Time stop**: if thesis is stale, exit regardless of price.
 
-## Setting Up Your Heartbeat
+## How to Start Trading (Agent Flow)
 
-When actively trading, sync with the heartbeat every 15–30 minutes so you stay aligned with wallet balance, market state, and pre-trade checks.
-
-**If your framework supports scheduled tasks:** Point it at the heartbeat URL:
-
-```
-https://raw.githubusercontent.com/pratikbuilds/predict-arena/main/HEARTBEAT.md
-```
-
-**If you don't have a scheduler:** Fetch the heartbeat at the start of each work session or between task cycles.
-
-**What the heartbeat gives you:**
-
-- Version checks (re-fetch this skill if version changed)
-- CLI and environment verification
-- Wallet funding status
-- Active market discovery prompts
-- Pre-trade checklist (dry run, mint verification)
-- Market lifecycle reminders
-
-## Quick Start
-
-Do these steps in order. Steps 1–5 are **setup** (one-time or per session). Steps 6–7 are **trading**.
-
-### 1. Install the CLI
-
-```bash
-npm install -g predictarena
-# or: npx predictarena (no install)
-```
-
-### 2. Set environment
-
-```bash
-export SOLANA_RPC_URL="https://api.mainnet-beta.solana.com"
-export PREDICTARENA_WALLET="./agent-wallet.json"
-```
-
-Optional: `DFLOW_API_KEY` or `PREDICTARENA_API_KEY` for production (dev endpoints are rate-limited).
-
-### 3. Create a wallet
-
-```bash
-predictarena wallet create ./agent-wallet.json --json
-```
-
-Save the `publicKey` from the response. You need it to fund the wallet.
-
-### 4. Fund the wallet
-
-Send **SOL** (for fees) and **USDC** (or other settlement token) to the wallet’s public key. Use your usual funding method (e.g. exchange withdrawal, another wallet). Do not rely on public faucets for production.
-
-### 5. Set up your heartbeat
-
-Configure periodic fetching of [HEARTBEAT.md](./HEARTBEAT.md) as described above.
-
-### 6. Discover markets and get outcome mints
-
-```bash
-predictarena search "bitcoin" --limit 10 --json
-predictarena markets list --status active --limit 10 --json
-predictarena markets get <ticker> --json
-```
-
-From `markets get`, use `data.yesMint` and `data.noMint` as outcome mints for trading.
-
-### 7. Trade: dry run, then execute
-
-Always dry-run first to verify quote and market:
-
-```bash
-predictarena trade \
-  --wallet ./agent-wallet.json \
-  --input-mint EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v \
-  --output-mint <yesMint or noMint> \
-  --amount 1000000 \
-  --dry-run --json
-```
-
-Then execute (omit `--dry-run`):
-
-```bash
-predictarena trade \
-  --wallet ./agent-wallet.json \
-  --input-mint EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v \
-  --output-mint <yesMint or noMint> \
-  --amount 1000000 \
-  --json
-```
-
-Verify with `data.result.signature` and `data.result.confirmed`.
+Follow this sequence when an agent needs to trade prediction markets:
 
 ## Decision Loop (Run This Every Cycle)
 
@@ -182,50 +103,126 @@ Verify with `data.result.signature` and `data.result.confirmed`.
 8. **Monitor**: update probabilities; exit when thesis breaks.
 9. **Log**: store trade, rationale, and outcome for learning.
 
-## How to Trade Successfully
+### 1. First-Time Setup (One-Time)
 
-- **Setup first.** Complete steps 1–5 before placing trades. A funded wallet and a working RPC are required.
-- **Always dry run.** Use `--dry-run` to confirm market, mints, and quote before sending a transaction.
-- **Use `--json`.** Parse structured output for automation; don’t rely on human-readable text.
-- **Only trade active markets.** Check `markets get` for `status: "active"`. Avoid initialized, inactive, or closed markets for opening positions.
-- **Handle errors.** Retry with exponential backoff on transient API/RPC errors; verify mints and market status on 404s.
-- **Secure the wallet.** Never log or expose the keypair file; use env vars for paths.
+```bash
+# Install CLI
+npm install -g predictarena
+# or: npx predictarena (no install)
 
-### Profitability Checklist (Use Before Every Trade)
+# Set environment
+export SOLANA_RPC_URL="https://api.mainnet-beta.solana.com"
+export PREDICTARENA_WALLET="./agent-wallet.json"
 
-- **Market is active** and has clear resolution rules.
-- **Spread** is tight and **orderbook** has depth.
-- **Expected value is positive** (edge vs implied probability).
-- **Price impact** is within your limit.
-- **Position size** fits risk constraints.
-- **Exit plan** is defined.
+# Create wallet
+predictarena wallet create ./agent-wallet.json --json
+# Save publicKey from output — fund it with SOL and USDC
+```
 
-### CLI at a glance
+### 2. Discovery
 
-| Command | Purpose |
-| -------- | ------- |
-| `predictarena wallet create <path> [--json]` | Create keypair; fund the returned `publicKey` |
-| `predictarena search <query> [--json]` | Search events/markets by text |
-| `predictarena markets list [--status active] [--json]` | List markets |
-| `predictarena markets get <ticker> [--json]` | Get market (includes `yesMint`, `noMint`) |
-| `predictarena markets get-by-mint <mint> [--json]` | Resolve mint to market |
-| `predictarena trade --wallet <path> --input-mint <mint> --output-mint <mint> --amount <raw> [--dry-run] [--json]` | Quote (dry-run) or execute swap |
+```bash
+# Search for markets
+predictarena search "bitcoin" --limit 10 --json
+
+# Or list active markets
+predictarena markets list --status active --limit 10 --json
+
+# Get market details (YES/NO mints)
+predictarena markets get <ticker> --json
+# Extract: data.yesMint, data.noMint
+```
+
+### 3. Dry Run (Always Do First)
+
+```bash
+predictarena trade \
+  --wallet ./agent-wallet.json \
+  --input-mint EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v \
+  --output-mint <yesMint or noMint> \
+  --amount 1000000 \
+  --dry-run --json
+```
+
+### 4. Execute Trade
+
+```bash
+predictarena trade \
+  --wallet ./agent-wallet.json \
+  --input-mint EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v \
+  --output-mint <yesMint or noMint> \
+  --amount 1000000 \
+  --json
+```
+
+### 5. Verify Result
+
+Check `data.result.signature` and `data.result.confirmed` in the output.
 
 ---
 
-## Environment Reference
+## Prerequisites Check (Always Run First)
 
-| Variable | Required | Purpose |
-| -------- | -------- | ------- |
-| `SOLANA_RPC_URL` or `PREDICTARENA_RPC_URL` | Yes (for trading) | Solana RPC endpoint |
-| `PREDICTARENA_WALLET` or `WALLET_PATH` | No (use `--wallet`) | Default wallet keypair path |
-| `DFLOW_API_KEY` or `PREDICTARENA_API_KEY` | No (dev rate-limited) | Production API key |
+Before using any commands, ensure the CLI is available:
 
-Node.js >= 18 required. Test CLI with `predictarena --help`.
+1. **Check Node.js version**: `node --version` (must be >= 18)
+2. **Install CLI**: `npm install -g predictarena` or use `npx predictarena` (no install)
+3. **Test CLI**: `predictarena --help`
+
+From source (development): `npm install && npm run build` then `node dist/bin.mjs --help`.
+
+## Environment Setup (Required for Trading)
+
+Set these environment variables before trading:
+
+```bash
+# RPC endpoint (REQUIRED for trade execution)
+export SOLANA_RPC_URL="https://api.mainnet-beta.solana.com"
+# or
+export PREDICTARENA_RPC_URL="https://your-rpc-endpoint.com"
+
+# API endpoints (optional, defaults to dev)
+export METADATA_API_BASE="https://dev-prediction-markets-api.dflow.net"
+export TRADE_API_BASE="https://dev-quote-api.dflow.net"
+
+# API key (optional for dev, rate-limited without)
+export DFLOW_API_KEY="your-api-key"
+# or
+export PREDICTARENA_API_KEY="your-api-key"
+
+# Wallet path (optional, can be passed via --wallet flag)
+export PREDICTARENA_WALLET="./agent-wallet.json"
+# or
+export WALLET_PATH="./agent-wallet.json"
+```
+
+**For production**: Request an API key at `https://docs.dflow.net/build/api-key`.
+
+## First-Time Setup Checklist
+
+Run these commands in order for initial setup:
+
+```bash
+# 1. Install CLI
+npm install -g predictarena
+# or use npx predictarena for each command (no install)
+
+# 2. Create a wallet for trading
+predictarena wallet create ./agent-wallet.json --json
+
+# 3. Fund the wallet (copy publicKey from step 2 output)
+# Use Solana CLI or transfer SOL/USDC to the public key
+
+# 4. Verify wallet funding
+solana balance <publicKey>
+
+# 5. Test market discovery
+predictarena markets list --limit 3 --json
+```
 
 ## Command Reference
 
-Use these after completing Quick Start. All commands support:
+All commands support:
 
 - `--json`: Structured JSON output with `data`, `pagination`, `_hints`
 - `--verbose`: Enable verbose logging for debugging
@@ -334,11 +331,6 @@ Use this to identify which market an outcome token belongs to.
 ```bash
 predictarena markets orderbook <ticker> [--json]
 ```
-
-**Use the orderbook to estimate:**
-- Spread (best bid/ask difference)
-- Depth near the mid
-- Size needed to move the price
 
 ### 3. Search
 
@@ -498,10 +490,6 @@ predictarena trade \
   --json
 ```
 
-**Optional EV guardrails (agent logic):**
-- Require `edge >= 0.02` (2%) and `priceImpactPct <= 0.5`
-- If not satisfied, skip
-
 ### Workflow 2: Close a Position (Sell YES/NO)
 
 ```bash
@@ -558,15 +546,14 @@ Common errors and resolutions:
 
 ## Agent Best Practices
 
-- Dry run first; use `--json`; only trade `active` markets; check `redemptionStatus` before redeeming.
-- Handle API errors with retries; never log keypair files; check `result.signature` and `result.confirmed` after trades.
-- Outcome tokens (Token-2022) may have variable decimals — use `inputMintDecimals` / `outputMintDecimals` from trade output.
-
-### Learning Loop (Post-Trade)
-
-- Track PnL per market and per strategy.
-- Record `edge`, `priceImpactPct`, and outcome.
-- Increase size only after consistent positive results.
+1. **Always dry run first**: Use `--dry-run` to verify trade intent, market, and pricing before execution
+2. **Use `--json` flag**: Parse structured output instead of human-readable text
+3. **Check market status**: Only trade on `active` markets; check `redemptionStatus` before redeeming
+4. **Handle errors**: Catch API errors (404, 400, 500) and retry with exponential backoff
+5. **Secure wallet files**: Never log or expose keypair files; use environment variables for paths
+6. **Monitor transactions**: After trading, check `result.signature` and `result.confirmed` status
+7. **Rate limiting**: Dev endpoints are rate-limited; use production API key for high-frequency trading
+8. **Decimal conversions**: Outcome tokens use Token-2022 and may have variable decimals; use `inputMintDecimals` and `outputMintDecimals` from trade output
 
 ## Pagination Pattern
 
@@ -666,8 +653,10 @@ predictarena trade \
 
 ## Support
 
-- **Errors:** Use `--verbose`; see [Error Handling](#error-handling) and retry with backoff.
-- **Docs:** DFlow — https://docs.dflow.net; PredictArena — [SKILL.md](./SKILL.md), [HEARTBEAT.md](./HEARTBEAT.md).
-- **Before live trades:** Always `--dry-run`; ensure RPC is set and wallet has SOL for fees.
+For issues or questions:
 
-Setup once, then trade autonomously.
+- Check error messages in `--verbose` mode
+- Review DFlow documentation at https://docs.dflow.net
+- Test with `--dry-run` before live trades
+- Verify RPC endpoint connectivity
+- Ensure wallet is funded with SOL for transaction fees

@@ -1,6 +1,6 @@
 # PredictArena web
 
-Next.js app for the PredictArena site. `/skill.md` and `/llms.txt` are copied from repo root at build time and served from `public/`.
+Next.js app for the PredictArena site. `/skill.md`, `/llms.txt`, and `/HEARTBEAT.md` are served from `public/`. Source of truth: repo root. After editing those files, run from repo root: `npm run sync-skill`.
 
 ```bash
 npm run dev

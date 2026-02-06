@@ -1,41 +1,55 @@
 # PredictArena CLI
 
-Production-ready CLI for discovering DFlow prediction markets.
+Production-ready CLI for discovering and trading DFlow prediction markets.
+
+## For AI Agents & Automation
+
+- **[SKILL.md](./SKILL.md)** - Comprehensive agent skill documentation with complete setup, commands, workflows, and best practices
+- **[AGENTS.md](./AGENTS.md)** - Quick reference guide for essential commands
+- **[llms.txt](./llms.txt)** - Documentation index for agent discovery
+
+Start with **SKILL.md** for complete integration guidance.
 
 ## Requirements
 
 - Node.js 18+
 
-## Install
+## Install (deployed CLI)
 
 ```bash
-npm install
+npm install -g predictarena
 ```
 
-## Build
+Or run without installing:
 
 ```bash
-npm run build
+npx predictarena <command> [options]
 ```
 
 ## Run
 
-Use the built CLI:
-
 ```bash
-node dist/bin.mjs <command> [options]
+predictarena <command> [options]
 ```
 
 Examples:
 
 ```bash
-node dist/bin.mjs categories --json
-node dist/bin.mjs series --category Economics --json
-node dist/bin.mjs events list --limit 5 --json
-node dist/bin.mjs markets list --limit 3 --json
-node dist/bin.mjs trades list --limit 5 --json
-node dist/bin.mjs search bitcoin --limit 5 --json
-node dist/bin.mjs wallet create ./agent-wallet.json
+predictarena categories --json
+predictarena series --category Economics --json
+predictarena events list --limit 5 --json
+predictarena markets list --limit 3 --json
+predictarena trades list --limit 5 --json
+predictarena search bitcoin --limit 5 --json
+predictarena wallet create ./agent-wallet.json
+```
+
+## Development (from source)
+
+```bash
+git clone <repo> && cd predictarena
+npm install && npm run build
+node dist/bin.mjs --help   # or: predictarena if linked via npm link
 ```
 
 ## Output formats
@@ -48,7 +62,7 @@ node dist/bin.mjs wallet create ./agent-wallet.json
 Create a Solana keypair for agent signing and save it to a file:
 
 ```bash
-node dist/bin.mjs wallet create <path>
+predictarena wallet create <path>
 ```
 
 The CLI writes a standard Solana keypair file (JSON array of 64 bytes) to `<path>` and prints the **public key** so you can fund it. The file is compatible with `Keypair.fromSecretKey(new Uint8Array(JSON.parse(...)))`.
@@ -70,3 +84,26 @@ Integration tests hit the live dev API.
 ```bash
 npm test
 ```
+
+## Publishing (maintainers)
+
+**Option A – Publish from CI (recommended)**  
+Push a version tag to trigger publish to npm:
+
+1. In GitHub: **Settings → Secrets and variables → Actions** → add secret **`NPM_TOKEN`** (npm Automation token from [npmjs.com/settings/~/tokens](https://www.npmjs.com/settings/~youruser/tokens)).
+2. Update `repository.url` in `package.json` to your repo (replace `your-org`).
+3. Bump version and push a tag:
+   ```bash
+   npm version patch   # or minor / major
+   git push && git push --tags
+   ```
+   The `.github/workflows/publish.yml` workflow runs on tags `v*` and runs `npm publish --provenance --access public`.
+
+**Option B – Publish locally**
+
+```bash
+npm run build
+npm publish --access public
+```
+
+Log in first with `npm login` if needed. `prepack` runs the build before publish; `files` includes only `dist`.

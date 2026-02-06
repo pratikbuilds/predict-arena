@@ -1,8 +1,6 @@
 # Agent-facing commands
 
-**For comprehensive documentation, see [SKILL.md](./SKILL.md)**
-
-Quick reference for autonomous agents (e.g. Cursor, scripts) working in this repo.
+Full docs: [SKILL.md](./SKILL.md). Periodic checklist: [HEARTBEAT.md](./HEARTBEAT.md). DFlow API concepts: https://pond.dflow.net/skill.md
 
 **CLI usage:** Use the deployed CLI as `predictarena` (after `npm install -g predictarena`) or `npx predictarena`. From source: `node dist/bin.mjs`.
 
@@ -155,6 +153,10 @@ predictarena trade \
   --json
 ```
 
+## Heartbeat
+
+Fetch [HEARTBEAT.md](./HEARTBEAT.md) every 15–30 min when actively trading. It covers wallet balance, market discovery, and pre-trade checks.
+
 ## Agent best practices
 
 1. **Always dry run first**: Use `--dry-run` to verify trade before execution
@@ -163,4 +165,4 @@ predictarena trade \
 4. **Handle errors**: Catch API errors and retry with exponential backoff
 5. **Secure wallets**: Never log keypair files; use environment variables
 
-For complete documentation, workflows, error handling, and advanced features, see **[SKILL.md](./SKILL.md)**.
+Full details: [SKILL.md](./SKILL.md).

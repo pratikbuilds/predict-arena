@@ -12,6 +12,8 @@ import type {
   TradesResponse,
   FilterOutcomeMintsRequest,
   FilterOutcomeMintsResponse,
+  MarketsBatchRequest,
+  MarketsBatchResponse,
 } from "../types/api";
 import type { Orderbook, SortField, SortMethod } from "../types/domain";
 
@@ -181,6 +183,20 @@ export async function filterOutcomeMints(
 ): Promise<FilterOutcomeMintsResponse> {
   const body: FilterOutcomeMintsRequest = { addresses };
   return requestJson<FilterOutcomeMintsResponse>(base(), "/api/v1/filter_outcome_mints", {
+    method: "POST",
+    body,
+  });
+}
+
+export async function getMarketsBatch(opts: {
+  mints?: string[];
+  tickers?: string[];
+}): Promise<MarketsBatchResponse> {
+  const body: MarketsBatchRequest = {
+    mints: opts.mints ?? null,
+    tickers: opts.tickers ?? null,
+  };
+  return requestJson<MarketsBatchResponse>(base(), "/api/v1/markets/batch", {
     method: "POST",
     body,
   });

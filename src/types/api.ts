@@ -51,3 +51,13 @@ export interface FilterOutcomeMintsRequest {
 export interface FilterOutcomeMintsResponse {
   outcomeMints: string[];
 }
+
+export interface MarketsBatchRequest {
+  mints?: string[] | null;
+  tickers?: string[] | null;
+}
+
+export interface MarketsBatchResponse {
+  markets: SingleMarketResponse[];
+  cursor?: number | null;
+}

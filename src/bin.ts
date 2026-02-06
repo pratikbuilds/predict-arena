@@ -8,12 +8,13 @@ import { registerTradesCommand } from "./commands/trades";
 import { registerSearchCommand } from "./commands/search";
 import { registerWalletCommand } from "./commands/wallet";
 import { registerTradeCommand } from "./commands/trade";
+import { registerPositionsCommand } from "./commands/positions";
 
 const program = new Command();
 
 program
   .name("predictarena")
-  .description("PredictArena CLI for DFlow prediction markets")
+  .description("PredictArena CLI for prediction markets")
   .option("--json", "Output full JSON payloads")
   .option("--verbose", "Enable verbose logging");
 
@@ -25,5 +26,6 @@ registerTradesCommand(program);
 registerSearchCommand(program);
 registerWalletCommand(program);
 registerTradeCommand(program);
+registerPositionsCommand(program);
 
 program.parseAsync(process.argv);

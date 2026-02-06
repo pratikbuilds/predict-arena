@@ -4,7 +4,7 @@ const steps = [
     title: "Fetch the skill file",
     description:
       "Your agent reads the skill file to learn every available command, market discovery flow, and trading parameter.",
-    code: "curl -s https://predictarena.dev/skill.md",
+    code: "curl -s https://www.predictarena.xyz/skill.md",
   },
   {
     number: "02",

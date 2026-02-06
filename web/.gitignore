@@ -17,6 +17,10 @@
 /.next/
 /out/
 
+# copied at build from repo root (source of truth: ../SKILL.md, ../llms.txt)
+/public/skill.md
+/public/llms.txt
+
 # production
 /build
 

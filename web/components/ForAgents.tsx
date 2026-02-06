@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export function ForAgents() {
   const [copied, setCopied] = useState(false);
-  const command = "curl -s https://predictarena.dev/skill.md";
+  const command = "curl -s https://www.predictarena.xyz/skill.md";
 
   function handleCopy() {
     navigator.clipboard.writeText(command);

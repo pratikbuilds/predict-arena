@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "cp ../SKILL.md public/skill.md && cp ../llms.txt public/llms.txt && next build",
     "start": "next start",
     "lint": "eslint"
   },

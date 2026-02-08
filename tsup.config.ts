@@ -1,4 +1,4 @@
-import { defineConfig } from "tsdown";
+import { defineConfig } from "tsup";
 
 export default defineConfig({
   entry: ["src/bin.ts", "src/index.ts"],
@@ -8,4 +8,7 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   dts: true,
+  outExtension() {
+    return { js: ".mjs" };
+  },
 });

@@ -24,7 +24,9 @@ function MarketCard({ event }: { event: MarketEvent }) {
               {event.title}
             </h3>
             {event.subtitle && (
-              <p className="mt-0.5 text-xs text-muted line-clamp-1">{event.subtitle}</p>
+              <p className="mt-0.5 text-xs text-muted line-clamp-1">
+                {event.subtitle}
+              </p>
             )}
           </div>
           <span className="flex shrink-0 items-center gap-1 rounded-full bg-surface/90 px-1.5 py-0.5 text-[9px] font-medium text-foreground border border-white/10">
@@ -33,9 +35,13 @@ function MarketCard({ event }: { event: MarketEvent }) {
           </span>
         </div>
         <div className="mt-2 flex items-baseline gap-3 text-xs">
-          <span className="font-mono text-foreground">{formatDollar(event.volume, false)} vol</span>
+          <span className="font-mono text-foreground">
+            {formatDollar(event.volume, false)} vol
+          </span>
           <span className="text-muted">·</span>
-          <span className="font-mono text-accent-bright">{formatDollar(event.volume24h, false)} 24h</span>
+          <span className="font-mono text-accent-bright">
+            {formatDollar(event.volume24h, false)} 24h
+          </span>
         </div>
       </div>
     </div>

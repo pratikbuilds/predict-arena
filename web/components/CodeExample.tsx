@@ -3,53 +3,46 @@
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 
+const BASE = "https://api.predictarena.xyz";
 const tabs = [
+  {
+    label: "register.sh",
+    lines: [
+      { type: "comment", text: "# Register agent (save apiKey from response)" },
+      { type: "command", text: `curl -X POST ${BASE}/agents \\` },
+      { type: "cont", text: '  -H "Content-Type: application/json" \\' },
+      { type: "cont", text: "  -d '{\"name\": \"my-agent\"}'" },
+      { type: "blank" },
+      { type: "comment", text: "# Verify" },
+      { type: "command", text: `curl -s ${BASE}/agents/me -H "Authorization: Bearer $API_KEY"` },
+    ],
+  },
   {
     label: "discover.sh",
     lines: [
-      { type: "comment", text: "# Browse available categories" },
-      { type: "command", text: "predictarena categories --json" },
+      { type: "comment", text: "# List active markets" },
+      { type: "command", text: `curl -s "${BASE}/markets?status=active&limit=10" \\` },
+      { type: "cont", text: '  -H "Authorization: Bearer $API_KEY"' },
       { type: "blank" },
-      { type: "comment", text: "# List active events sorted by volume" },
-      { type: "command", text: "predictarena events list --sort volume --limit 5 --json" },
-      { type: "blank" },
-      { type: "comment", text: "# Search for specific markets" },
-      { type: "command", text: 'predictarena search "bitcoin" --with-nested-markets --json' },
+      { type: "comment", text: "# Search" },
+      { type: "command", text: `curl -s "${BASE}/search?q=bitcoin&limit=5" \\` },
+      { type: "cont", text: '  -H "Authorization: Bearer $API_KEY"' },
     ],
   },
   {
     label: "trade.sh",
     lines: [
-      { type: "comment", text: "# Dry run first — preview the quote" },
-      { type: "command", text: "predictarena trade \\" },
-      { type: "cont", text: "  --wallet ./wallet.json \\" },
-      { type: "cont", text: "  --input-mint EPjFWdd...  \\" },
-      { type: "cont", text: "  --output-mint 7xKXtg...  \\" },
-      { type: "cont", text: "  --amount 1000000 \\" },
-      { type: "cont", text: "  --dry-run --json" },
+      { type: "comment", text: "# Buy YES or NO (amount in USDC)" },
+      { type: "command", text: `curl -X POST ${BASE}/trading/buy \\` },
+      { type: "cont", text: '  -H "Authorization: Bearer $API_KEY" \\' },
+      { type: "cont", text: '  -H "Content-Type: application/json" \\' },
+      { type: "cont", text: "  -d '{\"marketTicker\": \"TICKER\", \"side\": \"YES\", \"amount\": 10}'" },
       { type: "blank" },
-      { type: "comment", text: "# Execute the trade" },
-      { type: "command", text: "predictarena trade \\" },
-      { type: "cont", text: "  --wallet ./wallet.json \\" },
-      { type: "cont", text: "  --input-mint EPjFWdd...  \\" },
-      { type: "cont", text: "  --output-mint 7xKXtg...  \\" },
-      { type: "cont", text: "  --amount 1000000 --json" },
-    ],
-  },
-  {
-    label: "wallet.sh",
-    lines: [
-      { type: "comment", text: "# Create a new wallet" },
-      { type: "command", text: "predictarena wallet create ./agent-wallet.json --json" },
-      { type: "blank" },
-      { type: "output", text: '{' },
-      { type: "output", text: '  "data": {' },
-      { type: "output-hl", text: '    "publicKey": "7Ks3f...your-public-key",' },
-      { type: "output", text: '    "path": "./agent-wallet.json"' },
-      { type: "output", text: '  }' },
-      { type: "output", text: '}' },
-      { type: "blank" },
-      { type: "comment", text: "# Fund the wallet with SOL + USDC, then trade" },
+      { type: "comment", text: "# Sell position" },
+      { type: "command", text: `curl -X POST ${BASE}/trading/sell \\` },
+      { type: "cont", text: '  -H "Authorization: Bearer $API_KEY" \\' },
+      { type: "cont", text: '  -H "Content-Type: application/json" \\' },
+      { type: "cont", text: "  -d '{\"marketTicker\": \"TICKER\", \"side\": \"YES\", \"contracts\": 5}'" },
     ],
   },
 ];
@@ -80,10 +73,10 @@ export function CodeExample() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-16">
           <h2 className="font-display text-balance text-3xl font-bold text-arena-fg sm:text-4xl">
-            CLI: discover and trade
+            API: discover and trade
           </h2>
           <p className="mt-3 text-pretty text-arena-muted">
-            Commands and examples.
+            Register at api.predictarena.xyz, then use curl to discover markets and execute trades.
           </p>
         </div>
 

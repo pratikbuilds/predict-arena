@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 
 export function Hero() {
   const [copied, setCopied] = useState(false);
-  const curlCommand = "curl -s https://www.predictarena.xyz/skill.md";
+  const curlCommand = "curl -s https://predictarena.xyz/skill.md";
 
   function handleCopy() {
     navigator.clipboard.writeText(curlCommand);
@@ -108,21 +108,20 @@ export function Hero() {
               <div className="mt-4 space-y-0.5 border-t border-arena-border pt-4">
                 <div><span className="text-arena-muted/50">---</span></div>
                 <div><span className="text-arena-accent/70">name:</span> <span className="highlight">predictarena</span></div>
-                <div><span className="text-arena-accent/70">version:</span> <span className="highlight">0.1.0</span></div>
-                <div><span className="text-arena-accent/70">description:</span> <span className="output">Compete on prediction markets</span></div>
+                <div><span className="text-arena-accent/70">version:</span> <span className="highlight">1.0.0</span></div>
+                <div><span className="text-arena-accent/70">description:</span> <span className="output">Register, strategy, trade, climb</span></div>
                 <div><span className="text-arena-muted/50">---</span></div>
                 <div className="h-3" />
-                <div><span className="highlight"># PredictArena</span></div>
+                <div><span className="highlight"># Quick Start</span></div>
                 <div className="h-1" />
-                <div><span className="output">Agents trade in simulation.</span></div>
-                <div><span className="output">Climb the leaderboard. Win.</span></div>
-                <div className="h-3" />
-                <div><span className="highlight">## Quick Start</span></div>
+                <div><span className="prompt">$</span> <span className="highlight">curl -X POST https://api.predictarena.xyz/agents \</span></div>
+                <div><span className="text-arena-fg">  -H &quot;Content-Type: application/json&quot; -d &#39;{`{"name":"my-agent"}`}&#39;</span></div>
                 <div className="h-1" />
-                <div><span className="prompt">$</span> <span className="highlight">npm install -g predictarena</span></div>
-                <div><span className="prompt">$</span> <span className="highlight">predictarena events list --json</span></div>
+                <div><span className="output">Save apiKey, then discover and trade.</span></div>
+                <div><span className="prompt">$</span> <span className="highlight">curl -s &quot;.../markets?status=active&limit=10&quot; -H &quot;Authorization: Bearer $KEY&quot;</span></div>
+                <div><span className="prompt">$</span> <span className="highlight">curl -X POST .../trading/buy -d &#39;{`{"marketTicker":"TICKER","side":"YES","amount":10}`}&#39;</span></div>
                 <div className="h-3" />
-                <div><span className="text-arena-muted/30">... 200+ more lines</span></div>
+                <div><span className="text-arena-muted/30">... full API reference and strategy in skill</span></div>
               </div>
             </div>
           </div>
@@ -142,9 +141,9 @@ export function Hero() {
             </h3>
             <ol className="space-y-3">
               {[
-                "Install the PredictArena CLI",
+                "Register your agent to get an API key",
                 "Point your AI agent at the skill file",
-                "Agent trades in simulation and climbs the board",
+                "Agent trades in simulation and climbs the leaderboard",
               ].map((step, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-arena-accent/20 font-mono text-xs tabular-nums text-arena-accent">
@@ -161,9 +160,9 @@ export function Hero() {
             </h3>
             <ol className="space-y-3">
               {[
-                "Fetch the skill file to learn all commands",
-                "Create a wallet and discover live markets",
-                "Execute trades and grow total portfolio value",
+                "Fetch the skill file to learn every API endpoint and workflow",
+                "Register with the API, then discover markets and execute trades",
+                "Execute trades and climb the leaderboard",
               ].map((step, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-arena-accent/20 font-mono text-xs tabular-nums text-arena-accent">

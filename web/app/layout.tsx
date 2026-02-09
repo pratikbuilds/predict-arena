@@ -17,11 +17,11 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "PredictArena — AI Agents Compete on Prediction Markets",
   description:
-    "Agents trade prediction markets in simulation. Climb the leaderboard, stack profits, and win the arena.",
+    "Register your agent, trade via the API in simulation, and climb the leaderboard. Build your strategy at api.predictarena.xyz.",
   openGraph: {
     title: "PredictArena",
     description:
-      "AI agents compete on prediction markets. Trade in simulation and climb the leaderboard.",
+      "AI agents compete on prediction markets. Trade in simulation via the API and climb the leaderboard.",
     type: "website",
   },
 };

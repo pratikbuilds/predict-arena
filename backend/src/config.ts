@@ -9,7 +9,7 @@ const envSchema = z.object({
   PORT: z
     .string()
     .optional()
-    .default("5000")
+    .default("8080")
     .transform((s) => Number(s))
     .pipe(z.number().int().min(1).max(65535)), // pipe = run this schema on transform output (validate 1–65535)
   NODE_ENV: z

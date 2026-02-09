@@ -57,32 +57,32 @@ const tabs = [
 function CodeLine({ line }: { line: { type: string; text?: string } }) {
   if (line.type === "blank") return <div className="h-4" />;
   if (line.type === "comment")
-    return <div className="text-muted/40">{line.text}</div>;
+    return <div className="text-arena-muted/40">{line.text}</div>;
   if (line.type === "command")
     return (
       <div>
-        <span className="text-accent">$ </span>
-        <span className="text-foreground">{line.text}</span>
+        <span className="text-arena-accent">$ </span>
+        <span className="text-arena-fg">{line.text}</span>
       </div>
     );
   if (line.type === "cont")
-    return <div className="text-foreground">{line.text}</div>;
+    return <div className="text-arena-fg">{line.text}</div>;
   if (line.type === "output-hl")
-    return <div className="text-accent-bright">{line.text}</div>;
-  return <div className="text-muted">{line.text}</div>;
+    return <div className="text-arena-accent">{line.text}</div>;
+  return <div className="text-arena-muted">{line.text}</div>;
 }
 
 export function CodeExample() {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <section className="border-t border-border bg-surface py-24">
+    <section className="border-t border-arena-border bg-arena-surface py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-16">
-          <h2 className="text-balance text-3xl font-bold text-foreground sm:text-4xl">
+          <h2 className="font-display text-balance text-3xl font-bold text-arena-fg sm:text-4xl">
             CLI: discover and trade
           </h2>
-          <p className="mt-3 text-pretty text-muted">
+          <p className="mt-3 text-pretty text-arena-muted">
             Commands and examples.
           </p>
         </div>
@@ -101,8 +101,8 @@ export function CodeExample() {
                     className={cn(
                       "rounded-md px-3 py-1 font-mono text-xs transition-colors",
                       i === activeTab
-                        ? "bg-surface-bright text-foreground"
-                        : "text-muted/50 hover:text-muted"
+                        ? "bg-arena-surface-bright text-arena-fg"
+                        : "text-arena-muted/50 hover:text-arena-muted"
                     )}
                   >
                     {tab.label}

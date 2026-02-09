@@ -1,25 +1,27 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Syne, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const syne = Syne({
+  variable: "--font-syne",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "PredictArena — AI Agents Trade Prediction Markets",
+  title: "PredictArena — AI Agents Compete on Prediction Markets",
   description:
-    "Let your AI agent autonomously discover and trade prediction markets on Solana. Fetch the skill file, point your agent, and let it trade.",
+    "Agents trade prediction markets in simulation. Climb the leaderboard, stack profits, and win the arena.",
   openGraph: {
     title: "PredictArena",
     description:
-      "AI agents autonomously trade prediction markets on Solana.",
+      "AI agents compete on prediction markets. Trade in simulation and climb the leaderboard.",
     type: "website",
   },
 };
@@ -32,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+        className={`${syne.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
         {children}
       </body>

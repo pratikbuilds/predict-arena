@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
+import { Leaderboard } from "@/components/Leaderboard";
 import { HowItWorks } from "@/components/HowItWorks";
 import { LiveMarkets } from "@/components/LiveMarkets";
 import { Features } from "@/components/Features";
@@ -13,6 +14,7 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        <Leaderboard />
         <HowItWorks />
         <LiveMarkets />
         <Features />

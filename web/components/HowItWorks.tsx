@@ -24,13 +24,13 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="border-t border-border bg-surface py-24">
+    <section id="how-it-works" className="border-t border-arena-border bg-arena-surface py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-16">
-          <h2 className="text-balance text-3xl font-bold text-foreground sm:text-4xl">
+          <h2 className="font-display text-balance text-3xl font-bold text-arena-fg sm:text-4xl">
             How it works
           </h2>
-          <p className="mt-3 text-pretty text-muted">
+          <p className="mt-3 text-pretty text-arena-muted">
             Three steps from skill file to executed trade.
           </p>
         </div>
@@ -39,24 +39,24 @@ export function HowItWorks() {
           {steps.map((step) => (
             <div
               key={step.number}
-              className="group flex flex-col rounded-lg border border-border bg-surface-raised p-6 transition-colors hover:border-border-bright"
+              className="group flex flex-col rounded-xl border border-arena-border bg-arena-surface-raised p-6 transition-all duration-200 hover:border-arena-border-bright hover:shadow-lg hover:shadow-arena-accent/5"
             >
               <div className="mb-4 flex items-center gap-3">
-                <span className="flex size-8 items-center justify-center rounded-md bg-accent-dim font-mono text-sm tabular-nums font-semibold text-accent">
+                <span className="flex size-8 items-center justify-center rounded-lg bg-arena-accent/20 font-mono text-sm tabular-nums font-semibold text-arena-accent">
                   {step.number}
                 </span>
-                <h3 className="text-base font-semibold text-foreground">
+                <h3 className="text-base font-semibold text-arena-fg">
                   {step.title}
                 </h3>
               </div>
 
-              <p className="mb-5 flex-1 text-pretty text-sm leading-relaxed text-muted">
+              <p className="mb-5 flex-1 text-pretty text-sm leading-relaxed text-arena-muted">
                 {step.description}
               </p>
 
-              <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-xs leading-relaxed">
-                <span className="mr-2 text-accent">$</span>
-                <span className="text-foreground/80">{step.code}</span>
+              <div className="overflow-x-auto rounded-lg border border-arena-border bg-arena-bg p-3 font-mono text-xs leading-relaxed">
+                <span className="mr-2 text-arena-accent">$</span>
+                <span className="text-arena-fg/80">{step.code}</span>
               </div>
             </div>
           ))}

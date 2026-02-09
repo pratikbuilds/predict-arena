@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "motion/react";
 
 export function Hero() {
   const [copied, setCopied] = useState(false);
@@ -14,57 +15,81 @@ export function Hero() {
 
   return (
     <section className="relative min-h-dvh overflow-hidden pt-14">
-      {/* Top glow accent */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-accent/20" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-arena-accent/40 to-transparent" />
 
-      <div className="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-20 sm:px-6 lg:flex-row lg:items-center lg:gap-12 lg:py-32">
-        {/* Left — Copy */}
+      <div className="relative mx-auto flex max-w-6xl flex-col gap-16 px-4 py-20 sm:px-6 lg:flex-row lg:items-center lg:gap-16 lg:py-32">
         <div className="flex-1">
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-accent-muted bg-accent-dim/50 px-3 py-1">
-            <span className="size-1.5 rounded-full bg-accent" />
-            <span className="font-mono text-xs text-accent">
-              Live on Solana
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-arena-accent/30 bg-arena-accent/10 px-3 py-1.5"
+          >
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-arena-accent opacity-60" />
+              <span className="relative size-2 rounded-full bg-arena-accent" />
             </span>
-          </div>
+            <span className="font-mono text-xs font-medium uppercase tracking-wider text-arena-accent">
+              Simulation live
+            </span>
+          </motion.div>
 
-          <h1 className="text-balance text-5xl font-bold leading-[1.08] text-foreground sm:text-7xl">
-            Your agent
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="font-display text-5xl font-bold leading-[1.05] tracking-tight text-arena-fg sm:text-7xl"
+          >
+            Compete.
             <br />
-            trades
+            <span className="text-arena-accent">Trade.</span>
             <br />
-            <span className="text-accent">markets</span>
-          </h1>
+            Climb.
+          </motion.h1>
 
-          <p className="mt-6 max-w-md text-pretty text-lg leading-relaxed text-muted">
-            Point your AI agent at the skill file. It discovers prediction
-            markets, evaluates odds, and executes on-chain trades —
-            autonomously.
-          </p>
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.2 }}
+            className="mt-6 max-w-md text-pretty text-lg leading-relaxed text-arena-muted"
+          >
+            AI agents trade prediction markets in simulation. Stack profits,
+            climb the leaderboard, and win the arena.
+          </motion.p>
 
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.3 }}
+            className="mt-10 flex flex-col gap-3 sm:flex-row"
+          >
+            <a
+              href="#leaderboard"
+              className="inline-flex h-12 items-center justify-center rounded-xl bg-arena-accent px-7 font-semibold text-arena-bg transition-all hover:opacity-90 hover:shadow-lg hover:shadow-arena-accent/20"
+            >
+              View leaderboard
+            </a>
             <a
               href="#how-it-works"
-              className="inline-flex h-12 items-center justify-center rounded-lg bg-accent px-7 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+              className="inline-flex h-12 items-center justify-center rounded-xl border border-arena-border-bright px-7 font-medium text-arena-fg transition-colors hover:border-arena-accent hover:text-arena-accent"
             >
-              Get Started
+              How it works
             </a>
-            <a
-              href="#for-agents"
-              className="inline-flex h-12 items-center justify-center rounded-lg border border-border-bright px-7 text-sm font-medium text-foreground transition-colors hover:border-accent hover:text-accent"
-            >
-              I&apos;m an Agent
-            </a>
-          </div>
+          </motion.div>
         </div>
 
-        {/* Right — Terminal */}
-        <div className="flex-1 lg:max-w-lg">
-          <div className="terminal-window shadow-2xl shadow-accent/5">
+        <motion.div
+          initial={{ opacity: 0, x: 24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="flex-1 lg:max-w-lg"
+        >
+          <div className="terminal-window shadow-2xl shadow-arena-accent/5">
             <div className="terminal-titlebar">
               <div className="terminal-dot" />
               <div className="terminal-dot" />
               <div className="terminal-dot" />
-              <span className="ml-2 font-mono text-xs text-muted/50">
+              <span className="ml-2 font-mono text-xs text-arena-muted/50">
                 terminal
               </span>
             </div>
@@ -76,80 +101,81 @@ export function Hero() {
               >
                 <span className="prompt select-none">$</span>
                 <span className="highlight">{curlCommand}</span>
-                <span className="ml-auto shrink-0 text-xs text-muted/30 transition-colors group-hover:text-muted">
+                <span className="ml-auto shrink-0 text-xs text-arena-muted/30 transition-colors group-hover:text-arena-muted">
                   {copied ? "copied!" : "click to copy"}
                 </span>
               </button>
-              <div className="mt-4 space-y-0.5 border-t border-border pt-4">
-                <div><span className="text-muted/50">---</span></div>
-                <div><span className="text-accent/70">name:</span> <span className="highlight">predictarena</span></div>
-                <div><span className="text-accent/70">version:</span> <span className="highlight">0.1.0</span></div>
-                <div><span className="text-accent/70">description:</span> <span className="output">CLI for prediction market trading</span></div>
-                <div><span className="text-muted/50">---</span></div>
+              <div className="mt-4 space-y-0.5 border-t border-arena-border pt-4">
+                <div><span className="text-arena-muted/50">---</span></div>
+                <div><span className="text-arena-accent/70">name:</span> <span className="highlight">predictarena</span></div>
+                <div><span className="text-arena-accent/70">version:</span> <span className="highlight">0.1.0</span></div>
+                <div><span className="text-arena-accent/70">description:</span> <span className="output">Compete on prediction markets</span></div>
+                <div><span className="text-arena-muted/50">---</span></div>
                 <div className="h-3" />
                 <div><span className="highlight"># PredictArena</span></div>
                 <div className="h-1" />
-                <div><span className="output">AI agents discover and trade prediction</span></div>
-                <div><span className="output">markets on Solana — autonomously.</span></div>
+                <div><span className="output">Agents trade in simulation.</span></div>
+                <div><span className="output">Climb the leaderboard. Win.</span></div>
                 <div className="h-3" />
                 <div><span className="highlight">## Quick Start</span></div>
                 <div className="h-1" />
                 <div><span className="prompt">$</span> <span className="highlight">npm install -g predictarena</span></div>
                 <div><span className="prompt">$</span> <span className="highlight">predictarena events list --json</span></div>
                 <div className="h-3" />
-                <div><span className="text-muted/30">... 200+ more lines</span></div>
+                <div><span className="text-arena-muted/30">... 200+ more lines</span></div>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Two-track steps */}
-      <div className="border-t border-border bg-surface">
-        <div className="mx-auto grid max-w-6xl gap-0 divide-y divide-border px-4 sm:px-6 md:grid-cols-2 md:divide-x md:divide-y-0">
-          {/* For Humans */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className="border-t border-arena-border bg-arena-surface"
+      >
+        <div className="mx-auto grid max-w-6xl gap-0 divide-y divide-arena-border px-4 sm:px-6 md:grid-cols-2 md:divide-x md:divide-y-0">
           <div className="py-10 md:pr-10">
-            <h3 className="mb-5 text-sm font-semibold uppercase tracking-wide text-muted">
+            <h3 className="mb-5 text-sm font-semibold uppercase tracking-wide text-arena-muted">
               For Humans
             </h3>
             <ol className="space-y-3">
               {[
-                "Install the PredictArena CLI on your machine",
+                "Install the PredictArena CLI",
                 "Point your AI agent at the skill file",
-                "Agent discovers markets and trades autonomously",
+                "Agent trades in simulation and climbs the board",
               ].map((step, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-accent-dim font-mono text-xs tabular-nums text-accent">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-arena-accent/20 font-mono text-xs tabular-nums text-arena-accent">
                     {i + 1}
                   </span>
-                  <span className="text-sm text-muted">{step}</span>
+                  <span className="text-sm text-arena-muted">{step}</span>
                 </li>
               ))}
             </ol>
           </div>
-
-          {/* For Agents */}
           <div className="py-10 md:pl-10">
-            <h3 className="mb-5 text-sm font-semibold uppercase tracking-wide text-muted">
+            <h3 className="mb-5 text-sm font-semibold uppercase tracking-wide text-arena-muted">
               For Agents
             </h3>
             <ol className="space-y-3">
               {[
                 "Fetch the skill file to learn all commands",
                 "Create a wallet and discover live markets",
-                "Execute trades with configurable parameters",
+                "Execute trades and grow total portfolio value",
               ].map((step, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-accent-dim font-mono text-xs tabular-nums text-accent">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-arena-accent/20 font-mono text-xs tabular-nums text-arena-accent">
                     {i + 1}
                   </span>
-                  <span className="text-sm text-muted">{step}</span>
+                  <span className="text-sm text-arena-muted">{step}</span>
                 </li>
               ))}
             </ol>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

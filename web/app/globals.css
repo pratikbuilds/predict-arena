@@ -1,18 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050505;
-  --foreground: #f0f0f0;
-  --surface: #0a0a0a;
-  --surface-raised: #111113;
-  --surface-bright: #19191b;
-  --border: #1c1c20;
-  --border-bright: #2a2a30;
-  --muted: #7a7a85;
-  --accent: #22c55e;
-  --accent-bright: #4ade80;
-  --accent-dim: #052e16;
-  --accent-muted: #14532d;
+  /* Arena palette — competition / scoreboard */
+  --arena-bg: #060608;
+  --arena-fg: #f2f2f4;
+  --arena-surface: #0c0c0f;
+  --arena-surface-raised: #121218;
+  --arena-surface-bright: #1a1a22;
+  --arena-border: #1e1e28;
+  --arena-border-bright: #2c2c38;
+  --arena-muted: #7c7c8a;
+  --arena-accent: #00e676;
+  --arena-accent-dim: #0a2e1c;
+  --arena-accent-muted: #1b4d2e;
+  /* Top 3 */
+  --arena-gold: #ffc107;
+  --arena-silver: #9ca3af;
+  --arena-bronze: #d4a574;
+  /* Legacy compat */
+  --background: var(--arena-bg);
+  --foreground: var(--arena-fg);
+  --surface: var(--arena-surface);
+  --surface-raised: var(--arena-surface-raised);
+  --surface-bright: var(--arena-surface-bright);
+  --border: var(--arena-border);
+  --border-bright: var(--arena-border-bright);
+  --muted: var(--arena-muted);
+  --accent: var(--arena-accent);
+  --accent-bright: #33eb91;
+  --accent-dim: var(--arena-accent-dim);
+  --accent-muted: var(--arena-accent-muted);
 }
 
 @theme inline {
@@ -28,28 +45,55 @@
   --color-accent-bright: var(--accent-bright);
   --color-accent-dim: var(--accent-dim);
   --color-accent-muted: var(--accent-muted);
-  --font-sans: var(--font-geist-sans);
+  /* Arena */
+  --color-arena-bg: var(--arena-bg);
+  --color-arena-fg: var(--arena-fg);
+  --color-arena-surface: var(--arena-surface);
+  --color-arena-surface-raised: var(--arena-surface-raised);
+  --color-arena-surface-bright: var(--arena-surface-bright);
+  --color-arena-border: var(--arena-border);
+  --color-arena-border-bright: var(--arena-border-bright);
+  --color-arena-muted: var(--arena-muted);
+  --color-arena-accent: var(--arena-accent);
+  --color-arena-gold: var(--arena-gold);
+  --color-arena-silver: var(--arena-silver);
+  --color-arena-bronze: var(--arena-bronze);
+  --font-sans: var(--font-syne);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-syne);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  background-image: radial-gradient(circle, #222 0.5px, transparent 0.5px);
-  background-size: 24px 24px;
+  background: var(--arena-bg);
+  color: var(--arena-fg);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(0, 230, 118, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(255, 193, 7, 0.03) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+
+/* Subtle noise overlay for texture */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
 }
 
 ::selection {
-  background: var(--accent-dim);
-  color: var(--foreground);
+  background: var(--arena-accent-dim);
+  color: var(--arena-fg);
 }
 
 /* Terminal window chrome */
 .terminal-window {
-  border: 1px solid var(--border-bright);
-  border-radius: 8px;
-  background: var(--surface);
+  border: 1px solid var(--arena-border-bright);
+  border-radius: 12px;
+  background: var(--arena-surface);
   overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0, 230, 118, 0.05);
 }
 
 .terminal-titlebar {
@@ -57,15 +101,15 @@ body {
   align-items: center;
   gap: 6px;
   padding: 10px 14px;
-  background: var(--surface-raised);
-  border-bottom: 1px solid var(--border);
+  background: var(--arena-surface-raised);
+  border-bottom: 1px solid var(--arena-border);
 }
 
 .terminal-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--border-bright);
+  background: var(--arena-border-bright);
 }
 
 .terminal-body {
@@ -73,18 +117,29 @@ body {
   font-family: var(--font-geist-mono);
   font-size: 13px;
   line-height: 1.7;
-  color: var(--muted);
+  color: var(--arena-muted);
   overflow-x: auto;
 }
 
 .terminal-body .prompt {
-  color: var(--accent);
+  color: var(--arena-accent);
 }
 
 .terminal-body .output {
-  color: var(--muted);
+  color: var(--arena-muted);
 }
 
 .terminal-body .highlight {
-  color: var(--foreground);
+  color: var(--arena-fg);
+}
+
+/* Leaderboard top 3 glow */
+.rank-gold {
+  box-shadow: 0 0 24px -4px rgba(255, 193, 7, 0.15);
+}
+.rank-silver {
+  box-shadow: 0 0 20px -4px rgba(156, 163, 175, 0.12);
+}
+.rank-bronze {
+  box-shadow: 0 0 20px -4px rgba(212, 165, 116, 0.12);
 }

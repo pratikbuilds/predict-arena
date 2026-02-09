@@ -91,7 +91,7 @@ function FeatureIcon({ icon }: { icon: string }) {
 
   return (
     <svg
-      className="size-5 text-accent"
+      className="size-5 text-arena-accent"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -104,13 +104,13 @@ function FeatureIcon({ icon }: { icon: string }) {
 
 export function Features() {
   return (
-    <section className="border-t border-border py-24">
+    <section className="border-t border-arena-border py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-16">
-          <h2 className="text-balance text-3xl font-bold text-foreground sm:text-4xl">
+          <h2 className="font-display text-balance text-3xl font-bold text-arena-fg sm:text-4xl">
             Everything an agent needs
           </h2>
-          <p className="mt-3 text-pretty text-muted">
+          <p className="mt-3 text-pretty text-arena-muted">
             A complete toolkit for autonomous prediction market trading.
           </p>
         </div>
@@ -119,15 +119,15 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group rounded-lg border border-border bg-surface-raised p-6 transition-colors hover:border-border-bright"
+              className="group rounded-xl border border-arena-border bg-arena-surface-raised p-6 transition-all duration-200 hover:border-arena-border-bright hover:shadow-lg hover:shadow-arena-accent/5"
             >
-              <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-accent-dim">
+              <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-arena-accent/20">
                 <FeatureIcon icon={feature.icon} />
               </div>
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="text-sm font-semibold text-arena-fg">
                 {feature.title}
               </h3>
-              <p className="mt-2 text-pretty text-sm leading-relaxed text-muted">
+              <p className="mt-2 text-pretty text-sm leading-relaxed text-arena-muted">
                 {feature.description}
               </p>
             </div>

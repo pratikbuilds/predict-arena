@@ -16,6 +16,19 @@ const envSchema = z.object({
     .enum(["development", "production", "test"])
     .optional()
     .default("development"),
+  DFLOW_API_KEY: z.string().optional(),
+  DFLOW_METADATA_API_URL: z
+    .string()
+    .optional()
+    .default("https://dev-prediction-markets-api.dflow.net"),
+  DFLOW_TRADING_API_URL: z
+    .string()
+    .optional()
+    .default("https://dev-quote-api.dflow.net"),
+  USDC_MINT: z
+    .string()
+    .optional()
+    .default("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
 });
 
 function parseEnv() {
@@ -23,6 +36,10 @@ function parseEnv() {
     DATABASE_URL: process.env.DATABASE_URL,
     PORT: process.env.PORT,
     NODE_ENV: process.env.NODE_ENV,
+    DFLOW_API_KEY: process.env.DFLOW_API_KEY,
+    DFLOW_METADATA_API_URL: process.env.DFLOW_METADATA_API_URL,
+    DFLOW_TRADING_API_URL: process.env.DFLOW_TRADING_API_URL,
+    USDC_MINT: process.env.USDC_MINT,
   });
 
   if (!result.success) {

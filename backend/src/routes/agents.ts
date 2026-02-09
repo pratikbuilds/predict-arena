@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { Hono } from "hono";
 import { db } from "../db/client.js";
-import { agents } from "../db/schema.js";
+import { agents, agentBalances } from "../db/schema.js";
 import type { AgentVariables } from "../lib/auth.js";
 import { hashApiKey, requireAgent } from "../lib/auth.js";
 import type { RegisterAgentBody } from "../lib/schemas/agents.js";
@@ -26,10 +26,17 @@ agentsRoutes.post("/", async (c) => {
   const apiKeyHash = hashApiKey(apiKey);
 
   try {
-    const [agent] = await db
-      .insert(agents)
-      .values({ name: parsed.name, apiKeyHash })
-      .returning({ id: agents.id, name: agents.name, createdAt: agents.createdAt });
+    const agent = await db.transaction(async (tx) => {
+      const [created] = await tx
+        .insert(agents)
+        .values({ name: parsed.name, apiKeyHash })
+        .returning({ id: agents.id, name: agents.name, createdAt: agents.createdAt });
+
+      if (!created) return null;
+
+      await tx.insert(agentBalances).values({ agentId: created.id });
+      return created;
+    });
 
     if (!agent) {
       return c.json({ error: "Failed to create agent" }, 500);

@@ -6,5 +6,6 @@ export default defineConfig({
     include: ["test/**/*.test.ts"],
     setupFiles: ["./test/env.ts"],
     globalSetup: ["./test/setup.ts"],
+    fileParallelism: false, // prevent cleanupAgents from one file deleting another's agent
   },
 });

@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import type { z, ZodSchema } from "zod";
+import type { z, ZodSchema, ZodType } from "zod";
 import { env } from "../config.js";
 
 /**
@@ -25,6 +25,34 @@ export async function parseBody<T>(
   const first = result.error.errors[0];
   const message = first
     ? `${first.path.join(".") || "body"}: ${first.message}`
+    : "Validation failed";
+  const body: { error: string; details?: unknown } = { error: message };
+
+  if (env.NODE_ENV !== "production") {
+    body.details = result.error.flatten();
+  }
+
+  return c.json(body, 400);
+}
+
+/**
+ * Parse query params and validate with Zod. Returns parsed data or a 400 Response.
+ * Query values are always strings; schemas should use coerce/transform as needed.
+ */
+export function parseQuery<T>(
+  c: Context,
+  schema: ZodType<T, z.ZodTypeDef, unknown>,
+  source?: Record<string, string | undefined>,
+): T | Response {
+  const raw = source ?? c.req.query();
+  const result = schema.safeParse(raw);
+  if (result.success) {
+    return result.data;
+  }
+
+  const first = result.error.errors[0];
+  const message = first
+    ? `${first.path.join(".") || "query"}: ${first.message}`
     : "Validation failed";
   const body: { error: string; details?: unknown } = { error: message };
 

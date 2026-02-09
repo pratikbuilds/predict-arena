@@ -94,13 +94,15 @@ export function Hero() {
               aria-label="Copy curl command"
             >
               <span className="text-arena-accent">$</span>
-              <span className="flex-1 truncate text-arena-fg">{curlCommand}</span>
+              <span className="flex-1 truncate text-arena-fg">
+                {curlCommand}
+              </span>
               <span className="shrink-0 text-xs text-arena-muted group-hover:text-arena-accent">
                 {copied ? "Copied" : "Copy"}
               </span>
             </button>
             <p className="mt-2 text-xs text-arena-muted">
-              Full API and strategy in the skill file.
+              Full API and skill in this file.
             </p>
           </div>
         </motion.div>
